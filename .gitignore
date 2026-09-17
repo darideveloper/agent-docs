@@ -1,0 +1,12 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.tmp
+*.log
+
+# pull/promote artifacts
+/tmp-pull/
+*.patch
+/tmp/
+
+# keep local stubs tracked — do not ignore *.local.md (project decision)
