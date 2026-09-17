@@ -8,7 +8,7 @@ tags:
 type: resource
 status: active
 source: templates://astro/astro-markdown.md
-version: 2026-09-17+unreleased
+version: 2026-09-17+4cf710f
 
 ---
 

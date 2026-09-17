@@ -9,7 +9,7 @@ tags:
 type: area-note
 status: active
 source: templates://django/django.md
-version: 2026-09-17+unreleased
+version: 2026-09-17+4cf710f
 
 ---
 

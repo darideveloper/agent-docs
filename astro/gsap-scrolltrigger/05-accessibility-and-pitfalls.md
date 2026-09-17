@@ -11,7 +11,7 @@ tags:
 type: resource
 status: active
 source: templates://astro/gsap-scrolltrigger/05-accessibility-and-pitfalls.md
-version: 2026-09-17+unreleased
+version: 2026-09-17+4cf710f
 
 ---
 

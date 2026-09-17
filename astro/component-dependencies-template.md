@@ -10,7 +10,7 @@ tags:
 type: template
 status: active
 source: templates://astro/component-dependencies-template.md
-version: 2026-09-17+unreleased
+version: 2026-09-17+4cf710f
 
 ---
 

@@ -10,7 +10,7 @@ tags:
 type: resource
 status: active
 source: templates://astro/gsap-scrolltrigger/03-section-reveal-pattern.md
-version: 2026-09-17+unreleased
+version: 2026-09-17+4cf710f
 
 ---
 

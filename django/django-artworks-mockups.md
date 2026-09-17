@@ -12,7 +12,7 @@ tags:
 type: design
 status: active
 source: templates://django/django-artworks-mockups.md
-version: 2026-09-17+unreleased
+version: 2026-09-17+4cf710f
 
 ---
 

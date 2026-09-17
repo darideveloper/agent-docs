@@ -11,7 +11,7 @@ tags:
 type: resource
 status: active
 source: templates://astro/gsap-scrolltrigger/02-loader-and-entrance-orchestration.md
-version: 2026-09-17+unreleased
+version: 2026-09-17+4cf710f
 
 ---
 

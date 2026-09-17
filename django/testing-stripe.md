@@ -9,7 +9,7 @@ tags:
 type: guide
 status: active
 source: templates://django/testing-stripe.md
-version: 2026-09-17+unreleased
+version: 2026-09-17+4cf710f
 
 ---
 
