@@ -1,6 +1,6 @@
 ---
 created: 2026-09-09
-updated: 2026-09-17
+updated: 2026-09-27
 tags:
   - astro
   - git
@@ -10,7 +10,7 @@ tags:
 type: resource
 status: active
 source: templates://astro/astro-worktrees.md
-version: 2026-09-27+2a98280
+version: 2026-09-27+0ecb7bf
 
 ---
 
@@ -187,7 +187,7 @@ its config once (it falls under the `.*/` gitignore):
 git add -f .opencode/worktree.jsonc
 ```
 
-Openspec isolation rule: branch proposals stay isolated — never copy active `openspec/changes/*` into a sibling; before merge, copy back only `openspec/changes/archive/` (the sole tracked openspec path). Then start the server manually (`pnpm run dev`, no autostart) and verify with `portless list`.
+Openspec isolation rule: branch proposals stay isolated — never copy active `openspec/changes/*` into a sibling; before merge, copy back only `openspec/changes/archive/` (the sole tracked openspec path; pair defined in [astro-base-config](./astro-base-config.md) § `.gitignore`). Then start the server manually (`pnpm run dev`, no autostart) and verify with `portless list`.
 
 ## What Doesn't Transfer
 
@@ -197,6 +197,7 @@ Openspec isolation rule: branch proposals stay isolated — never copy active `o
 | `.env` | gitignored (secrets) | copy from main checkout or `.env.example`; keep `API_BASE_URL` on the shared backend unless testing another one |
 | `.astro/`, `dist/` | generated | recreated by `dev`/`build` |
 | Dotfolders (`.vscode/`, `.opencode/`, …) | gitignored via `.*/` (see base-config `.gitignore` template) | reconfigure if needed; default: sync `.opencode/skills/openspec-*` + `commands/opsx-*.md` by hand (see Bootstrap); plugin opt-in: force-add `worktree.jsonc` |
+| Active `openspec/changes/*` proposals | gitignored, isolated per checkout | never copy; before merge copy back only `archive/` |
 | Uncommitted changes | worktrees start from committed `HEAD` | commit or stash first, or they won't be there |
 
 > A fresh `.env` copy keeps main's `SITE_URL` — with the auto-derive chain above this is harmless (each checkout resolves its own `PORTLESS_URL` first). Override `SITE_URL` per worktree only if canonicals or redirects must differ explicitly.
@@ -250,7 +251,9 @@ The [opencode-worktree](https://github.com/kdcokenny/opencode-worktree) plugin l
     // the symlink before the plugin's `git add -A` or an absolute
     // machine-local path gets committed to the team branch.
     "preDelete": ["test -L node_modules && rm node_modules || true"]
-    // OPTIONAL — only if the project uses openspec: append the MAIN-sync
+    // DISCOURAGED — breaks proposal isolation (active changes/ would cross
+    // checkouts); default is archive-only sync. Use only on explicit project
+    // opt-in: append the MAIN-sync
     // strings to the arrays above (do NOT add second postCreate/preDelete
     // keys — JSON allows only one of each). Post-create:
     //   "MAIN=$(git worktree list --porcelain 2>/dev/null | awk '/^worktree /{print $2; exit}'); [ -n \"$MAIN\" ] && mkdir -p openspec/changes && cp -rn \"$MAIN/openspec/changes/.\" openspec/changes/ || true",

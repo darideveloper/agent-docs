@@ -1,6 +1,6 @@
 ---
 created: 2026-09-04
-updated: 2026-09-04
+updated: 2026-09-27
 tags:
   - django
   - testing
@@ -8,7 +8,7 @@ tags:
 type: guide
 status: active
 source: templates://django/django-testing-contract.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+0ecb7bf
 
 ---
 
@@ -150,6 +150,7 @@ venv
 ```
 
 - Do **not** add explicit `/.pytest_cache/` or `/conftest.py` — `.*/` handles dotfiles; `conftest.py`/`pytest.ini` (no dot) intentionally not gitignored — blocked by the guard instead (fail-loud > silent ignore). Minimal-file decision.
+- Full `.gitignore` (including `openspec/changes/*` + `!openspec/changes/archive/`) lives in [[django-project-setup]] §4 — this section owns only the `.*/` minimal rationale.
 - Verification (proves `.*/` works, don't grep `.gitignore`):
   ```bash
   touch .hidden_test_file && git check-ignore -v .hidden_test_file  # → .gitignore:57:.*/
@@ -262,6 +263,12 @@ touch .opencode/test && git check-ignore -v .opencode/test # → .gitignore:.*/ 
 # conftest.py / pytest.ini (no dot) intentionally NOT ignored — guard FAILs them instead
 rm -rf .pytest_cache                          # stale cache from previous pytest runs
 
+# .gitignore — openspec proposals (pair defined in [[django-project-setup]] §4)
+mkdir -p openspec/changes/proposal-test openspec/changes/archive
+touch openspec/changes/proposal-test/proposal.md && git check-ignore -v openspec/changes/proposal-test/proposal.md  # → .gitignore:openspec/changes/* (active, ignored)
+touch openspec/changes/archive/keep.md && git check-ignore openspec/changes/archive/keep.md || echo "tracked"  # → not ignored (archived, tracked)
+rm -rf openspec/changes/proposal-test && rm -f openspec/changes/archive/keep.md  # clean up proofs
+
 # Negative proof
 echo 'raise AssertionError("should not be importable")' > conftest.py
 ./.opencode/commands/guard.sh  # → FAIL: banned file found ./conftest.py
@@ -306,7 +313,7 @@ False positives avoided: import check is anchored `^\s*(import pytest|from pytes
 
 - [ ] Copy `AGENTS.md` Testing section (§2.1)
 - [ ] Copy `<PROJECT>/settings.py` `IS_TESTING` + `STORAGES` fallback (§2.2) — both `Path`/`os.path` variants, including `private` only if used
-- [ ] Add `/.venv/` to `.gitignore` (keep `.*/` — verify via `git check-ignore -v .pytest_cache` and `git check-ignore -v .opencode/test`)
+- [ ] Add `/.venv/` to `.gitignore` (keep `.*/` + `openspec/changes/*` pair — see [[django-project-setup]] §4; verify via `git check-ignore -v .pytest_cache` and `git check-ignore -v .opencode/test`)
 - [ ] Ensure `requirements.txt` has no pytest (only `selenium>=4.40.0` if needed) — `grep -i pytest` empty
 - [ ] Add `guard.sh` + workflow **in Django project** (force-add with `git add -f`), set `test-contract-guard` required in branch protection
 - [ ] Update project docs (`django-project-setup.md` §9 etc.) — no `pytest` run instructions in `docs/**/*.md`

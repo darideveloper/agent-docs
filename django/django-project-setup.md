@@ -1,6 +1,6 @@
 ---
 created: 2026-04-18
-updated: 2026-09-17
+updated: 2026-09-27
 tags:
   - django
   - setup
@@ -8,7 +8,7 @@ tags:
 type: resource
 status: active
 source: templates://django/django-project-setup.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+0ecb7bf
 
 ---
 
@@ -95,6 +95,8 @@ python manage.py startapp {app_name}
 ### 4. Git Initialization
 Initialize a Git repository to track your changes and commit the initial project state.
 
+**Rule: every new project MUST create its `.gitignore` from the block below at setup.** Agents: run it verbatim (project-specific ignores go below, clearly marked).
+
 ```bash
 # Initialize git
 git init
@@ -127,13 +129,20 @@ openspec/changes/*
 # ignore by default all hidden folders (like agents folders)
 .*/
 
-# client delivery doc (internal, not shipped)
+# Client delivery doc (internal, not shipped)
 CLIENT.md
 
-# docs are ignored except the worktree runbook (tracked per [[django-worktrees]])
+# Docs are ignored except the worktree runbook (tracked per [[django-worktrees]])
 /docs/*
 !/docs/django-worktrees.md
 EOF
+
+Caution: the `.*/` line ignores every dotfolder, so nothing under
+`.opencode/` / `.github/` crosses worktrees on its own — that is why
+`worktree-new.sh` hand-syncs `.opencode/skills/openspec-*` (commit the
+guard with `git add -f`). The `openspec/changes/*` + `!archive/` pair is
+what makes archive-only sharing possible (active proposals stay isolated
+per checkout; only `archive/` is tracked).
 
 # Add all files and commit
 git add .

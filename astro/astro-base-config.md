@@ -1,6 +1,6 @@
 ---
 created: 2026-09-09
-updated: 2026-09-17
+updated: 2026-09-27
 tags:
   - astro
   - configuration
@@ -8,7 +8,7 @@ tags:
 type: resource
 status: active
 source: templates://astro/astro-base-config.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+0ecb7bf
 
 ---
 
@@ -197,6 +197,35 @@ openspec/changes/*
 
 # ignore by default all hidden folders (like agents folders)
 .*/
+```
+
+**Rule: every new project MUST create its `.gitignore` from this template at setup.** Agents: run the block below verbatim (project-specific ignores go below, clearly marked):
+
+```bash
+# Create .gitignore (canonical — every project; worktree/openspec rules included)
+cat <<EOF > .gitignore
+# build output
+dist/
+
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# environment variables
+.env
+.env.production
+
+# Ignore proposals
+openspec/changes/*
+
+# Do not ignore archived proposals
+!openspec/changes/archive/
+
+# ignore by default all hidden folders (like agents folders)
+.*/
+EOF
 ```
 
 Caution: the `.*/` line ignores every dotfolder, so nothing under

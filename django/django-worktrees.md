@@ -1,6 +1,6 @@
 ---
 created: 2026-09-17
-updated: 2026-09-17
+updated: 2026-09-27
 tags:
   - django
   - git
@@ -11,7 +11,7 @@ tags:
 type: resource
 status: active
 source: templates://django/django-worktrees.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+0ecb7bf
 
 ---
 
@@ -135,6 +135,7 @@ remains a meaningful guard. Squash compresses the branch to one commit on
 | `db.sqlite3`, `testing.sqlite3` | gitignored | recreated; tests always use sqlite |
 | `media/`, `staticfiles/` | gitignored | recreated |
 | Dotfolders (`.opencode/`, …) | gitignored via `.*/` | openspec skills/commands synced by script |
+| Active `openspec/changes/*` proposals | gitignored, isolated per sibling | never copied; only `archive/` synced back by `worktree-done.sh` |
 | Uncommitted changes | siblings start from `HEAD` | commit or stash first |
 
 ## Database
@@ -151,7 +152,8 @@ DB_ENGINE=django.db.backends.sqlite3
 ## Openspec per sibling
 
 Active proposals under `openspec/changes/*` stay isolated per sibling (only
-`openspec/changes/archive/` is tracked). New siblings get the workflow via
+`openspec/changes/archive/` is tracked — ignore pair defined in
+[[django-project-setup]] §4). New siblings get the workflow via
 the `.opencode/skills/openspec-*` + `commands/opsx-*.md` markdown sync in
 `worktree-new.sh`. Before merge, copy back only `archive/`.
 
@@ -200,7 +202,7 @@ Full runbook: `docs/django-worktrees.md`.
   (harmless — settings resolve `PORTLESS_URL → HOST`), `migrate`, openspec skills sync.
 - Gotchas: shared Postgres `DB_NAME=<project>` (migrate from one sibling at a time;
   `DB_ENGINE=django.db.backends.sqlite3` escape hatch); openspec active proposals stay
-  isolated (only `archive/` shared back); agents never autostart servers
+  isolated (only `archive/` synced back by `worktree-done.sh`); agents never autostart servers
    (verify with `portless list`).
 ```
 
