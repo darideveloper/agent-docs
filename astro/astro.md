@@ -39,6 +39,7 @@ Astro is a modern web framework designed for speed, focusing on content-driven w
 | API calls | [Fetch Wrapper Pattern](./astro-fetch-wrapper.md) | any backend/CMS fetch | no API (e.g. i18n-only content site) |
 | i18n (N languages) | [Internationalization](./astro-i18n.md) | 2+ languages | single language |
 | Markdown | [Markdown Rendering](./astro-markdown.md) | CMS/API prose, JSON markdown, blog | all strings plain text |
+| Images | [SSG Image Optimization](./astro-images.md) | remote/CMS images, LCP tuning, OG images | plain local images only |
 | PWA | [PWA Out of the Box](./astro-pwa.md) | installable/offline needed | plain website (API-cache block conditional on Fetch layer) |
 | Animation | [GSAP + ScrollTrigger](./gsap-scrolltrigger/README.md) | sequenced/scroll/loader animation | CSS transitions suffice, strict no-JS |
 
