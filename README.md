@@ -37,8 +37,12 @@ docs/
 ## Promote (generic improvements → PR)
 
 ```bash
-./promote.sh            # TUI: pick DIVERGED vendor file → diff vs upstream → write .patch
+./promote.sh                              # TUI grouped by state
+./promote.sh --check                      # read-only: UP-TO-DATE/DIVERGED/NEW
+./promote.sh --all --yes --out ./patches/ # batch for agents/CI
 ```
+
+Updates (`DIVERGED`) emit `<name>.patch`; brand-new header-stamped files (`source: templates://<stack>/<file>`, upstream 404) emit a full copy + `<name>.manifest.json.snippet` + hub-row hint. Secrets gate runs first (placeholders pass, real keys block). After merge, projects re-`pull.sh` to clean — upstream stamps `version:` on merge, projects keep `+local` until then.
 
 Only generic fixes are promoted. Project-specific content stays in `*.local.md` and is never promoted wholesale.
 

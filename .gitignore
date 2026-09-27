@@ -7,6 +7,9 @@ Thumbs.db
 # pull/promote artifacts
 /tmp-pull/
 *.patch
+/patches/
+*.add.md
+*.manifest.json.snippet
 /tmp/
 
 # keep local stubs tracked — do not ignore *.local.md (project decision)
