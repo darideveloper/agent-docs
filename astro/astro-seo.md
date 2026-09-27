@@ -8,7 +8,7 @@ tags:
 type: resource
 status: active
 source: templates://astro/astro-seo.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+2a98280
 
 ---
 
@@ -345,6 +345,8 @@ const isProd = import.meta.env.PROD;
 
 ### 6.2 Multimedia Optimization
 
+For the **full** SSG image-optimization pattern (remote CDN/API re-optimization, AVIF + WebP `<picture>` output, `IMAGE_SLOTS` widths↔sizes invariant, LCP srcset preload, React-island byte parity, and the `image.remotePatterns` allowlist gate) → **[[astro-images]]**. This section is the quick-start for simple local images only.
+
 Use `astro:assets` `Image` component for automatic optimization (WebP/AVIF conversion, resizing).
 
 **Best Practices:**
@@ -369,7 +371,7 @@ import { Image } from 'astro:assets'
 />
 ```
 
-The `widths` + `sizes` pattern generates multiple resolutions for responsive displays.
+The `widths` + `sizes` pattern generates multiple resolutions for responsive displays, but for a shared atom with format negotiation and remote-src support, prefer the `Image.astro` atom in [[astro-images]].
 
 ## 7. Core Web Vitals Optimization
 
@@ -388,6 +390,9 @@ Key optimizations for page speed:
 ```
 
 ### 7.3 Hero Image Preload
+
+For the responsive `imagesrcset`/`imagesizes` preload that matches the rendered variant (LCP priority), follow `lcpPreload()` in **[[astro-images]]**. The plain-href form below is the minimal fallback.
+
 ```astro
 ---
 {preloadImage && <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />}

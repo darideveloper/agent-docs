@@ -8,7 +8,7 @@ tags:
 type: resource
 status: active
 source: templates://astro/astro-markdown.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+2a98280
 
 ---
 
@@ -49,6 +49,7 @@ Rule: never put the block atom inside a `<p>`. Never use `renderInline` for mult
 
 | Your project has… | Read |
 |---|---|
+| Pages authored as local `.md` files (Content Collections) | §2 + §4 + §6 Variant F |
 | No API, no i18n — just markdown strings | §2 + §4 + one of §3 |
 | Translation files (JSON) | + §6 Variant B |
 | API with `{ es: {…}, en: {…} }` dicts | + §6 Variant C |
@@ -516,6 +517,87 @@ const html = renderMarkdown(content, { copyLabel: "Copy", copiedLabel: "Copied!"
 <div class="article-body" set:html={html} />
 <aside>{description && <p set:html={renderInline(description)} />}</aside>
 ```
+
+### Variant F — local `.md` files via Astro Content Collections
+
+Precondition: pages are authored as files (legal pages, docs, changelog) rather than living in an API or translation JSON. Uses Astro's built-in Content Collections — only this variant touches `astro:content` / `astro/loaders`.
+
+**1. Define the collection** — `src/content.config.ts` (project root, next to `astro.config.mjs`). Use the `glob()` loader so IDs match your file naming, not the default github-slug:
+
+```ts
+// src/content.config.ts
+import { defineCollection, z } from "astro:content"
+import { glob } from "astro/loaders"
+
+const legal = defineCollection({
+  loader: glob({
+    pattern: "**/*.md",
+    base: "./src/content/legal",
+    generateId: ({ entry }) => entry.replace(/\.md$/, ""), // "<slug>.<lang>"
+  }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    updated: z.string(),
+  }),
+})
+export const collections = { legal }
+```
+
+**2. Author the files** with frontmatter + markdown body:
+
+```markdown
+---
+title: "Privacy Policy"
+description: "How we collect, use, and protect your data."
+updated: "Last updated: September 2026"
+---
+## Data controller
+…
+```
+
+**3. Render a page** — `getCollection("legal")`, then look up the exact entry for the current `pageKey`/`lang`. **Throw at build if a language file is missing** — no silent fallback (a missing translation is a bug worth failing on):
+
+```astro
+---
+import { getCollection } from "astro:content"
+import Markdown from "@/components/atoms/Markdown.astro"
+
+const entries = await getCollection("legal")
+const entry = entries.find((e) => e.id === `${pageKey}.${lang}`)
+if (!entry) throw new Error(`Missing legal markdown file for ${pageKey}.${lang}`)
+const { title, description, updated } = entry.data
+---
+<h1>{title}</h1>
+<p>{description}</p>
+<p class="text-sm text-muted">{updated}</p>
+<Markdown content={entry.body} />
+```
+
+**4. Wire routing** — two options:
+
+- **No i18n — standalone route component.** A route component emits one URL per entry (or per `${id}` pair) via `getStaticPaths()`. Because it already fetched the collection, pass the resolved `entry` down as a prop rather than re-querying in the page. The page component then accepts an `entry` prop and renders `entry.body` via `<Markdown>` (the step-3 snippet instead shows the fetch-by-id shape used when the page resolves its own entry from the catch-all):
+
+```astro
+---
+// src/pages/legal/[slug].astro — one URL per localized markdown file.
+import type { Page } from "astro"
+import { getCollection } from "astro:content"
+import LegalPage from "@/components/pages/legal/LegalPage.astro"
+
+export const getStaticPaths: Page["getStaticPaths"] = async () => {
+  const entries = await getCollection("legal")
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }))
+}
+
+const { entry } = Astro.props
+---
+<LegalPage entry={entry} />
+```
+
+For a default-language-prefixed + unprefixed convention (e.g. `en/privacidad` and `privacidad` for the `es` default), emit **two** params per entry — one with the lang prefix, one without for the default language — or use a `getStaticPathsLangs`-style helper (see [[astro-i18n]] §5 for the mirror pattern).
+
+- **With i18n** (multi-language): register the pageKey in your route map and let the catch-all `[...path].astro` / `getStaticPaths` handle it → [[astro-i18n]] §5. The schema above embeds `lang` in the ID (`<slug>.<lang>`), so each entry is the single source for one localized page.
 
 ## 7. Usage patterns
 

@@ -43,6 +43,7 @@
       "fetch-wrapper": { "files": ["astro-fetch-wrapper.md"], "description": "Fetch Wrapper Pattern — any backend/CMS fetch; skip if no API" },
       "i18n": { "files": ["astro-i18n.md"], "description": "Internationalization — 2+ languages; skip if single language" },
       "markdown": { "files": ["astro-markdown.md"], "description": "Markdown Rendering — CMS/API prose, JSON markdown, blog; skip if plain text only" },
+      "images": { "files": ["astro-images.md"], "description": "SSG Image Optimization — remotePatterns gate, Image atom, IMAGE_SLOTS, LCP preload, React-island parity; skip if plain local images only" },
       "pwa": { "files": ["astro-pwa.md"], "description": "PWA Out of the Box — installable/offline needed; skip if plain website" },
       "gsap-scrolltrigger": { "files": ["gsap-scrolltrigger/README.md", "gsap-scrolltrigger/01-setup-and-mandatory-files.md", "gsap-scrolltrigger/02-loader-and-entrance-orchestration.md", "gsap-scrolltrigger/03-section-reveal-pattern.md", "gsap-scrolltrigger/04-scroll-effects-marquee-and-counters.md", "gsap-scrolltrigger/05-accessibility-and-pitfalls.md", "gsap-scrolltrigger/06-optional-swiper-scroller.md"], "description": "GSAP + ScrollTrigger — sequenced/scroll/loader animation; skip if CSS transitions suffice" }
     }
