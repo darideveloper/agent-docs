@@ -1,6 +1,5 @@
 ---
 created: 2026-09-09
-updated: 2026-09-09
 tags:
   - astro
   - markdown
@@ -8,7 +7,7 @@ tags:
 type: resource
 status: active
 source: templates://astro/astro-markdown.md
-version: 2026-09-27+2a98280
+version: 2026-09-27+57b0fd3
 
 ---
 
@@ -22,7 +21,7 @@ This doc is generic: copy it into any Astro project. Every section states its pr
 
 > Convention in this doc: `@/` means `./src/*` (see §1). `example.com` is your site. `en`/`es` are example languages — the pattern scales to any set.
 
-> See also: `[[astro-i18n]]` (translation files, `t()` lookup, localized routing) and `[[astro-seo]]` (SEO component hierarchy, canonical/OG wiring) — this doc assumes one of those systems (or an equivalent) wherever a variant lists it as a precondition.
+> See also: `[astro-i18n](./astro-i18n.md)` (translation files, `t()` lookup, localized routing) and `[astro-seo](./astro-seo.md)` (SEO component hierarchy, canonical/OG wiring) — this doc assumes one of those systems (or an equivalent) wherever a variant lists it as a precondition.
 
 ## 0. Prerequisites + decision tree
 
@@ -550,7 +549,6 @@ export const collections = { legal }
 ---
 title: "Privacy Policy"
 description: "How we collect, use, and protect your data."
-updated: "Last updated: September 2026"
 ---
 ## Data controller
 …
@@ -595,9 +593,9 @@ const { entry } = Astro.props
 <LegalPage entry={entry} />
 ```
 
-For a default-language-prefixed + unprefixed convention (e.g. `en/privacidad` and `privacidad` for the `es` default), emit **two** params per entry — one with the lang prefix, one without for the default language — or use a `getStaticPathsLangs`-style helper (see [[astro-i18n]] §5 for the mirror pattern).
+For a default-language-prefixed + unprefixed convention (e.g. `en/privacidad` and `privacidad` for the `es` default), emit **two** params per entry — one with the lang prefix, one without for the default language — or use a `getStaticPathsLangs`-style helper (see [astro-i18n](./astro-i18n.md) §5 for the mirror pattern).
 
-- **With i18n** (multi-language): register the pageKey in your route map and let the catch-all `[...path].astro` / `getStaticPaths` handle it → [[astro-i18n]] §5. The schema above embeds `lang` in the ID (`<slug>.<lang>`), so each entry is the single source for one localized page.
+- **With i18n** (multi-language): register the pageKey in your route map and let the catch-all `[...path].astro` / `getStaticPaths` handle it → [astro-i18n](./astro-i18n.md) §5. The schema above embeds `lang` in the ID (`<slug>.<lang>`), so each entry is the single source for one localized page.
 
 ## 7. Usage patterns
 

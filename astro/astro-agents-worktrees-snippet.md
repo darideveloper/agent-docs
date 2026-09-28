@@ -1,6 +1,5 @@
 ---
 created: 2026-09-17
-updated: 2026-09-17
 tags:
   - astro
   - git
@@ -10,7 +9,7 @@ tags:
 type: resource
 status: active
 source: templates://astro/astro-agents-worktrees-snippet.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 
@@ -83,9 +82,9 @@ Gotchas:
 
 | Placeholder | Example | Where it appears |
 |---|---|---|
-| `<project>` | `vetoxzyn` | checkout paths, URLs, `.env` copy source |
-| `<prod-domain>` | `https://vetoxzyncomercial.mx` | only in the chain comment (`PORTLESS_URL → SITE_URL → prod`), not in commands |
-| `<projects-root>` | `/mnt/hd/develop/astro/` | layout block only |
+| `<project>` | `<project>` | checkout paths, URLs, `.env` copy source |
+| `<prod-domain>` | `https://<project>comercial.mx` | only in the chain comment (`PORTLESS_URL → SITE_URL → prod`), not in commands |
+| `<projects-root>` | `/path/to/project/` | layout block only |
 
 ## Connection to Other Patterns
 

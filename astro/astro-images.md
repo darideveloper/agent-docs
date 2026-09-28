@@ -1,6 +1,5 @@
 ---
 created: 2026-09-27
-updated: 2026-09-27
 tags:
   - astro
   - images
@@ -10,13 +9,13 @@ tags:
 type: resource
 status: active
 source: templates://astro/astro-images.md
-version: 2026-09-27+2a98280
+version: 2026-09-27+57b0fd3
 
 ---
 
 # SSG Image Optimization for Astro (best practices)
 
-> **Opt-in layer.** Precondition: [Base config](./astro-base-config.md) (`@/` alias). Complements the multimedia/performance guidance in [[astro-seo]] (this doc is the canonical source for the full optimization pattern; [[astro-seo#6-2-multimedia-optimization]] links here).
+> **Opt-in layer.** Precondition: [Base config](./astro-base-config.md) (`@/` alias). Complements the multimedia/performance guidance in [astro-seo](./astro-seo.md) (this doc is the canonical source for the full optimization pattern; [astro-seo#6-2-multimedia-optimization](./astro-seo.md#6-2-multimedia-optimization) links here).
 
 Build-time, source-agnostic image optimization via the `astro:assets` image service. Produces responsive, format-negotiated (AVIF + WebP) `<picture>` output from **local imports, remote CDN URLs, or API/dashboard strings** — with a graceful fallback so one unreachable remote never fails the build. Includes the smallest-common LCP (largest-contentful-paint) preload and byte-parity handling for React islands.
 
@@ -26,7 +25,7 @@ This doc is generic: copy it into any Astro project and substitute the host/qual
 
 ## 0. Prerequisites + decision tree
 
-Dependencies: none beyond Astro itself. `sharp` is bundled (see [[astro-seo]] §1). `@astrojs/sitemap` only if you emit a sitemap (optional here).
+Dependencies: none beyond Astro itself. `sharp` is bundled (see [astro-seo](./astro-seo.md) §1). `@astrojs/sitemap` only if you emit a sitemap (optional here).
 
 You need the full pattern if **any** of these are true:
 
@@ -34,7 +33,7 @@ You need the full pattern if **any** of these are true:
 - You have a **shared image atom** used across cards/grids/heroes and want one response-image source of truth.
 - You care about LCP/hero preload or React-island byte parity.
 
-You can strip it down if you only have a handful of local images → use `astro:assets` `Image` directly ([[astro-seo]] §6.2) and skip §4–§8.
+You can strip it down if you only have a handful of local images → use `astro:assets` `Image` directly ([astro-seo](./astro-seo.md) §6.2) and skip §4–§8.
 
 ### Decision tree
 
@@ -244,7 +243,7 @@ In your **SEO base component** (`BaseSEO.astro`), special-case the og image:
 - Absolute (remote CDN) og images pass through as-is.
 - Relative ones get the `BUSINESS_DATA.url` prefix.
 - Keep a default og image in `public/` (`/og-image.jpg`).
-- Sitemap: use `@astrojs/sitemap`'s `filter` to drop paths you don't want indexed (e.g. checkout), as in [[astro-seo]] §5.
+- Sitemap: use `@astrojs/sitemap`'s `filter` to drop paths you don't want indexed (e.g. checkout), as in [astro-seo](./astro-seo.md) §5.
 
 ## 7. React-island byte parity (only if you use React islands)
 
@@ -296,7 +295,7 @@ const slides = await Promise.all(
 
 ## Connection to Other Patterns
 
-- Multimedia/performance best practices + the basic `astro:assets` `Image` → [[astro-seo]] §6.2, §7
-- `BUSINESS_DATA.url` origin chain → [[astro-site-config]]
-- Merged `astro.config.mjs` (this doc's block slots in) → [[astro-base-config]]
-- The shared atom lives in the atoms tier → [[astro-atomic-components]]
+- Multimedia/performance best practices + the basic `astro:assets` `Image` → [astro-seo](./astro-seo.md) §6.2, §7
+- `BUSINESS_DATA.url` origin chain → [astro-site-config](./astro-site-config.md)
+- Merged `astro.config.mjs` (this doc's block slots in) → [astro-base-config](./astro-base-config.md)
+- The shared atom lives in the atoms tier → [astro-atomic-components](./astro-atomic-components.md)

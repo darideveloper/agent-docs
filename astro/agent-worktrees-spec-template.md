@@ -1,6 +1,5 @@
 ---
 created: 2026-09-17
-updated: 2026-09-17
 tags:
   - astro
   - git
@@ -10,7 +9,7 @@ tags:
 type: resource
 status: active
 source: templates://astro/agent-worktrees-spec-template.md
-version: 2026-09-27+2a98280
+version: 2026-09-27+57b0fd3
 
 ---
 

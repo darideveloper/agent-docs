@@ -1,29 +1,31 @@
 {
   "django": {
     "base": [
+      { "file": "django.md", "description": "Django hub — index of base + layers + worked examples (every project)" },
       { "file": "django-project-setup.md", "description": "Project Setup Guide — scaffolding; links out for storage/tests/fixtures/admin bases (every project)" },
       { "file": "django-model-definitions.md", "description": "Model Definitions — English admin-visible texts" },
       { "file": "django-unfold-admin.md", "description": "Unfold Admin Theme — canonical project/admin_base.py, auto sidebar, base_site.html" },
+      { "file": "django-drf.md", "description": "DRF Implementation Guide — default ON; /api/ router (use minimal non-DRF urls variant if no API)" },
       { "file": "django-media-storage.md", "description": "Media Storage Configuration — canonical STORAGES + IS_TESTING" },
-      { "file": "django-testing-contract.md", "description": "Testing Contract (Django-only Runner) — canonical test runner + STORAGES" },
-      { "file": "django-fixtures.md", "description": "Fixed Data Loading with Django Fixtures — loader in <MAIN_APP>" }
+      { "file": "django-testing-contract.md", "description": "Testing Contract (Django-only Runner) — test runner (STORAGES canonical lives in media-storage)" },
+      { "file": "django-fixtures.md", "description": "Fixed Data Loading with Django Fixtures — loader in <APP_LABEL> main app" }
     ],
     "layers": {
-      "drf": { "files": ["django-drf.md"], "description": "Optional only if REST API; /api/ router" },
       "redis": { "files": ["django-redis.md"], "description": "Redis in Django — caching/Celery, full REDIS_URL" },
-      "excel-export": { "files": ["django-excel-export.md"], "description": "Excel Export — openpyxl, imports base from unfold doc" },
+      "excel-export": { "files": ["django-excel-export.md"], "description": "Excel Export — openpyxl, separate export flavor ModelAdminUnfoldExportBase" },
       "bruno": { "files": ["django-bruno.md"], "description": "Bruno API Client — /api/ collections" },
       "local-subdomain": { "files": ["django-local-subdomain-setup.md"], "description": "Local Development & Subdomain Setup — portless + dev.sh" },
       "worktrees": { "files": ["django-worktrees.md"], "description": "Git Worktrees + Portless (Django) — one checkout per branch" },
       "cloudflare-tunnel": { "files": ["django-cloudflare-tunnel.md"], "description": "Cloudflare Tunnel Setup — dev exposure, merged hosts" },
       "i18n-es-admin": { "files": ["django-i18n-es-admin.md"], "description": "Spanish Django Admin — OPT-IN Spanish variant, skip for English default" },
       "image-copy-link": { "files": ["django-image-copy-link.md"], "description": "Image Copy Link Utility — English Copy link, per-model Media" },
-      "stripe": { "files": ["stripe-account-setup.md", "stripe-subscriptions.md", "testing-stripe.md"], "description": "Stripe worked examples — subscriptions architecture, account setup, testing (copy as example, not template)" },
-      "artworks-mockups": { "files": ["django-artworks-mockups.md"], "description": "Artwork Room Mockups — worked design exploration, do not copy as template" }
+      "stripe": { "files": ["stripe-account-setup.md", "stripe-subscriptions.md", "testing-stripe.md"], "description": "Stripe worked examples — subscriptions architecture, account setup, testing (do not copy as template)" },
+      "artworks-mockups": { "files": ["django-artworks-mockups.md"], "description": "Artwork Room Mockups — worked design exploration (do not copy as template)" }
     }
   },
   "astro": {
     "base": [
+      { "file": "astro.md", "description": "Astro hub — index of base + layers (every project)" },
       { "file": "astro-base-config.md", "description": "Base config — merged astro.config + tsconfig + package.json + env (every project)" },
       { "file": "astro-atomic-components.md", "description": "Atomic Component Hierarchy" },
       { "file": "astro-site-config.md", "description": "All Config in One Place (site-config / consts / env)" },
@@ -31,7 +33,7 @@
       { "file": "astro-seo.md", "description": "Search Engine Optimization (SEO core)" },
       { "file": "astro-docker-deployment.md", "description": "Dockerized Deployment (pnpm)" },
       { "file": "astro-portless.md", "description": "Portless Dev Workflow" },
-      { "file": "astro-worktrees.md", "description": "Git Worktrees + Portless (Core) — one checkout per branch, branch-subdomain .localhost" },
+      { "file": "astro-worktrees.md", "description": "Git Worktrees + Portless (Core) — one checkout per branch, branch-subdomain .localhost (manual-siblings default, plugin opt-in)" },
       { "file": "astro-agents-worktrees-snippet.md", "description": "AGENTS.md worktrees snippet (copy-paste) — canonical per-project agent contract" },
       { "file": "agent-worktrees-spec-template.md", "description": "agent-worktrees spec template (copy-paste) — enforceable SHALL requirements" },
       { "file": "component-dependencies-guide.md", "description": "Component Dependency Map — Guide" },
@@ -44,8 +46,8 @@
       "i18n": { "files": ["astro-i18n.md"], "description": "Internationalization — 2+ languages; skip if single language" },
       "markdown": { "files": ["astro-markdown.md"], "description": "Markdown Rendering — CMS/API prose, JSON markdown, blog; skip if plain text only" },
       "images": { "files": ["astro-images.md"], "description": "SSG Image Optimization — remotePatterns gate, Image atom, IMAGE_SLOTS, LCP preload, React-island parity; skip if plain local images only" },
-      "pwa": { "files": ["astro-pwa.md"], "description": "PWA Out of the Box — installable/offline needed; skip if plain website" },
-      "gsap-scrolltrigger": { "files": ["gsap-scrolltrigger/README.md", "gsap-scrolltrigger/01-setup-and-mandatory-files.md", "gsap-scrolltrigger/02-loader-and-entrance-orchestration.md", "gsap-scrolltrigger/03-section-reveal-pattern.md", "gsap-scrolltrigger/04-scroll-effects-marquee-and-counters.md", "gsap-scrolltrigger/05-accessibility-and-pitfalls.md", "gsap-scrolltrigger/06-optional-swiper-scroller.md"], "description": "GSAP + ScrollTrigger — sequenced/scroll/loader animation; skip if CSS transitions suffice" }
+      "pwa": { "files": ["astro-pwa.md"], "description": "PWA Out of the Box — installable/offline needed; API-cache block conditional on Fetch layer; skip if plain website" },
+      "gsap-scrolltrigger": { "files": ["gsap-scrolltrigger/README.md", "gsap-scrolltrigger/01-setup-and-mandatory-files.md", "gsap-scrolltrigger/02-loader-and-entrance-orchestration.md", "gsap-scrolltrigger/03-section-reveal-pattern.md", "gsap-scrolltrigger/04-scroll-effects-marquee-and-counters.md", "gsap-scrolltrigger/05-accessibility-and-pitfalls.md", "gsap-scrolltrigger/06-optional-swiper-scroller.md"], "description": "GSAP + ScrollTrigger — sequenced/scroll/loader animation; skip if CSS transitions suffice or strict no-JS" }
     }
   }
 }

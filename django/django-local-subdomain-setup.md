@@ -1,6 +1,5 @@
 ---
 created: 2026-05-02
-updated: 2026-09-17
 tags:
   - django
   - dev-ops
@@ -10,7 +9,7 @@ tags:
 type: resource
 status: active
 source: templates://django/django-local-subdomain-setup.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 
@@ -27,7 +26,7 @@ The goal is to start all project services (Django, Celery, Frontend, Proxies) wi
 Ensure the following are installed on the development machine:
 - **`tmux`**: Terminal multiplexer for managing background processes.
 - **`portless`**: Manages local proxying and TLS trust.
-- **`python-dotenv`**: For managing environment-based settings in Django (only loader — see [[django-project-setup|Project Setup]]).
+- **`python-dotenv`**: For managing environment-based settings in Django (only loader — see [Project Setup](./django-project-setup.md)).
 
 ---
 
@@ -42,7 +41,7 @@ import os
 from urllib.parse import urlparse
 
 # ALLOWED_HOSTS must include the portless domain
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")  # then strip each: [h.strip() for h in ...] to avoid DisallowedHost on " b"
 
 # Worktree dev loop: portless injects PORTLESS_URL per checkout, so a copied
 # .env.dev resolves each sibling's own domain without edits.
@@ -52,13 +51,13 @@ HOST = (os.getenv("PORTLESS_URL", "") or os.getenv("HOST", "")).rstrip("/")
 cors_allowed = os.getenv("CORS_ALLOWED_ORIGINS")
 if cors_allowed and cors_allowed != "None":
     CORS_ALLOWED_ORIGINS = [
-        origin.strip().rstrip("/") for origin in cors_allowed.split(",") if origin.strip()
+        origin.strip().rstrip("/") for origin in cors_allowed.split(",")  # then strip each: [h.strip() for h in ...] to avoid DisallowedHost on " b" if origin.strip()
     ]
 
 csrf_trusted = os.getenv("CSRF_TRUSTED_ORIGINS")
 if csrf_trusted and csrf_trusted != "None":
     CSRF_TRUSTED_ORIGINS = [
-        origin.strip().rstrip("/") for origin in csrf_trusted.split(",") if origin.strip()
+        origin.strip().rstrip("/") for origin in csrf_trusted.split(",")  # then strip each: [h.strip() for h in ...] to avoid DisallowedHost on " b" if origin.strip()
     ]
 
 # Worktree dev loop: a copied .env.dev must work in any sibling, so in dev
@@ -82,7 +81,7 @@ if DEBUG and HOST:
 Update `.env.dev` to provide the correct defaults for team members. (`.env` only carries `ENV=dev`; all per-environment config — including the `localhost` subdomain hosts — lives in `.env.dev` / `.env.prod`.)
 
 ```env
-# Merged with [[django-project-setup]] §5 — keep localhost entries and append the subdomain.
+# Merged with [django-project-setup](./django-project-setup.md) §5 — keep localhost entries and append the subdomain.
 ALLOWED_HOSTS=localhost,127.0.0.1,project-name.localhost
 CORS_ALLOWED_ORIGINS=https://project-name.localhost
 CSRF_TRUSTED_ORIGINS=https://project-name.localhost
@@ -90,7 +89,7 @@ HOST=https://project-name.localhost
 ```
 
 > A copied `.env.dev` keeps main's `HOST` — harmless: settings resolve
-> `PORTLESS_URL → HOST` first, so each sibling (see [[django-worktrees|Git Worktrees]])
+> `PORTLESS_URL → HOST` first, so each sibling (see [Git Worktrees](./django-worktrees.md))
 > accepts its own `https://<project>-<branch>.localhost` domain in dev.
 
 ---
@@ -185,7 +184,7 @@ prefix): main `https://<project>.localhost`, sibling
 `https://<project>-<branch>.localhost` — each with its own tmux session and
 port via the scan above. Full runbook, scripts (`worktree-new.sh`,
 `worktree-done.sh`), and sibling rules → see
-[[django-worktrees|Git Worktrees + Portless (Django)]].
+[Git Worktrees + Portless (Django)](./django-worktrees.md).
 
 ---
 

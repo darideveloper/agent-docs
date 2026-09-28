@@ -1,6 +1,5 @@
 ---
 created: 2026-09-04
-updated: 2026-09-27
 tags:
   - django
   - testing
@@ -8,13 +7,13 @@ tags:
 type: guide
 status: active
 source: templates://django/django-testing-contract.md
-version: 2026-09-27+0ecb7bf
+version: 2026-09-27+57b0fd3
 
 ---
 
 # Django Testing Contract — Django-only Runner
 
-> Drop-in guide to lock **any** Django project to `python manage.py test` and prevent `pytest`/`pytest-django` (or any alternative runner) from creeping back — via docs, settings, gitignore, and a mechanical CI guard. Copy-paste ready. `STORAGES` block here (§2.2) is canonical — [[django-project-setup|Project Setup]] and [[django-media-storage|Media Storage]] link here instead of duplicating.
+> Drop-in guide to lock **any** Django project to `python manage.py test` and prevent `pytest`/`pytest-django` (or any alternative runner) from creeping back — via docs, settings, gitignore, and a mechanical CI guard. Copy-paste ready. `STORAGES` canonical lives in [Media Storage](./django-media-storage.md) — the snippet below (§2.2) is the test-only fallback shape, do not treat as canonical.
 
 This is the generalized, vault-portable version of a real project pattern. It fixes the 3 root causes that invited pytest drift: **(1)** system `pytest` outside `venv`, **(2)** stale `conftest.py` reference, **(3)** LLMs defaulting to `pytest`.
 
@@ -68,7 +67,7 @@ Canonical runner: `venv/bin/python manage.py test [--verbosity=2]` (or `python m
 
 Allowed bases/helpers: `django.test.TestCase`, `rest_framework.test.APITestCase` / `APIClient`, `django.test.RequestFactory`, `django.test.override_settings`, `django.core.files.uploadedfile.SimpleUploadedFile`, `django.core.management.call_command`, and stdlib helpers (`unittest.mock`, `base64`, `hashlib`, `hmac`, `Decimal`, `json`). Only testing extra in `requirements.txt` is `selenium`.
 
-**Banned:** `pytest`, `pytest-django`, `conftest.py`, `pytest.ini`/`.pytest.ini`, `setup.cfg` with `[tool:pytest]`, `pyproject.toml` with `[tool.pytest]` / `[tool.pytest.ini_options]`, and any `import pytest` / `from pytest` / `@pytest.*` in `*.py`. Do not add `conftest.py`, `pytest.ini`, or pytest config. The contract is enforced by `.opencode/commands/guard.sh` and CI job `test-contract-guard`. See this contract and [[django-project-setup]] §7 for `IS_TESTING` isolation.
+**Banned:** `pytest`, `pytest-django`, `conftest.py`, `pytest.ini`/`.pytest.ini`, `setup.cfg` with `[tool:pytest]`, `pyproject.toml` with `[tool.pytest]` / `[tool.pytest.ini_options]`, and any `import pytest` / `from pytest` / `@pytest.*` in `*.py`. Do not add `conftest.py`, `pytest.ini`, or pytest config. The contract is enforced by `.opencode/commands/guard.sh` and CI job `test-contract-guard`. See this contract and [django-project-setup](./django-project-setup.md) §7 for `IS_TESTING` isolation.
 ```
 
 Why `AGENTS.md` over `CONTRIBUTING.md`: lowest friction, already loaded by agents, versioned. A hook that rewrites `pytest` → `manage.py test` was rejected — it hides rather than teaches.
@@ -90,7 +89,7 @@ IS_TESTING = len(sys.argv) > 1 and sys.argv[1] == "test"
 if IS_TESTING:
     DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": BASE_DIR / "testing.sqlite3"}}
 else:
-    # ... normal DB_ENGINE / DB_* logic per [[django-project-setup]] §7
+    # ... normal DB_ENGINE / DB_* logic per [django-project-setup](./django-project-setup.md) §7
     pass
 
 # STORAGES: avoid Whitenoise manifest during tests
@@ -137,7 +136,7 @@ else:
     }
 ```
 
-> No `conftest.py` fixture needed. Admin changelist/change/add views render 200 during `manage.py test` because `StaticFilesStorage` doesn't need `staticfiles.json`. Production stays on `CompressedManifestStaticFilesStorage`. No runtime change to existing `TestCase`/`APITestCase` suites. See also [[django-media-storage]] for S3 details.
+> No `conftest.py` fixture needed. Admin changelist/change/add views render 200 during `manage.py test` because `StaticFilesStorage` doesn't need `staticfiles.json`. Production stays on `CompressedManifestStaticFilesStorage`. No runtime change to existing `TestCase`/`APITestCase` suites. See also [django-media-storage](./django-media-storage.md) for S3 details.
 
 ### 2.3 `.gitignore` — minimal (Ponytail)
 
@@ -150,7 +149,7 @@ venv
 ```
 
 - Do **not** add explicit `/.pytest_cache/` or `/conftest.py` — `.*/` handles dotfiles; `conftest.py`/`pytest.ini` (no dot) intentionally not gitignored — blocked by the guard instead (fail-loud > silent ignore). Minimal-file decision.
-- Full `.gitignore` (including `openspec/changes/*` + `!openspec/changes/archive/`) lives in [[django-project-setup]] §4 — this section owns only the `.*/` minimal rationale.
+- Full `.gitignore` (including `openspec/changes/*` + `!openspec/changes/archive/`) lives in [django-project-setup](./django-project-setup.md) §4 — this section owns only the `.*/` minimal rationale.
 - Verification (proves `.*/` works, don't grep `.gitignore`):
   ```bash
   touch .hidden_test_file && git check-ignore -v .hidden_test_file  # → .gitignore:57:.*/
@@ -263,7 +262,7 @@ touch .opencode/test && git check-ignore -v .opencode/test # → .gitignore:.*/ 
 # conftest.py / pytest.ini (no dot) intentionally NOT ignored — guard FAILs them instead
 rm -rf .pytest_cache                          # stale cache from previous pytest runs
 
-# .gitignore — openspec proposals (pair defined in [[django-project-setup]] §4)
+# .gitignore — openspec proposals (pair defined in [django-project-setup](./django-project-setup.md) §4)
 mkdir -p openspec/changes/proposal-test openspec/changes/archive
 touch openspec/changes/proposal-test/proposal.md && git check-ignore -v openspec/changes/proposal-test/proposal.md  # → .gitignore:openspec/changes/* (active, ignored)
 touch openspec/changes/archive/keep.md && git check-ignore openspec/changes/archive/keep.md || echo "tracked"  # → not ignored (archived, tracked)
@@ -313,7 +312,7 @@ False positives avoided: import check is anchored `^\s*(import pytest|from pytes
 
 - [ ] Copy `AGENTS.md` Testing section (§2.1)
 - [ ] Copy `<PROJECT>/settings.py` `IS_TESTING` + `STORAGES` fallback (§2.2) — both `Path`/`os.path` variants, including `private` only if used
-- [ ] Add `/.venv/` to `.gitignore` (keep `.*/` + `openspec/changes/*` pair — see [[django-project-setup]] §4; verify via `git check-ignore -v .pytest_cache` and `git check-ignore -v .opencode/test`)
+- [ ] Add `/.venv/` to `.gitignore` (keep `.*/` + `openspec/changes/*` pair — see [django-project-setup](./django-project-setup.md) §4; verify via `git check-ignore -v .pytest_cache` and `git check-ignore -v .opencode/test`)
 - [ ] Ensure `requirements.txt` has no pytest (only `selenium>=4.40.0` if needed) — `grep -i pytest` empty
 - [ ] Add `guard.sh` + workflow **in Django project** (force-add with `git add -f`), set `test-contract-guard` required in branch protection
 - [ ] Update project docs (`django-project-setup.md` §9 etc.) — no `pytest` run instructions in `docs/**/*.md`
@@ -325,11 +324,11 @@ False positives avoided: import check is anchored `^\s*(import pytest|from pytes
 
 ## 8. See Also
 
-- [[django-project-setup|Project Setup Guide]] §7 Database & Storage + §9 Validation — scaffolding + `IS_TESTING` canonical; this contract extends it
-- [[django-drf|DRF Implementation Guide]] §13 Testing — `APITestCase` base that runs under this contract
-- [[django-media-storage|Media Storage Configuration]] — S3 storage backends referenced in `STORAGES`
-- [[testing-stripe|Testing Stripe Subscriptions]] — end-to-end lifecycle tests that run via `manage.py test` under this contract
-- [[django-unfold-admin|Unfold Admin Theme]] — admin where `StaticFilesStorage` fallback prevents manifest failures
+- [Project Setup Guide](./django-project-setup.md) §7 Database & Storage + §9 Validation — scaffolding + `IS_TESTING` canonical; this contract extends it
+- [DRF Implementation Guide](./django-drf.md) §13 Testing — `APITestCase` base that runs under this contract
+- [Media Storage Configuration](./django-media-storage.md) — S3 storage backends referenced in `STORAGES`
+- [Testing Stripe Subscriptions](./testing-stripe.md) — end-to-end lifecycle tests that run via `manage.py test` under this contract
+- [Unfold Admin Theme](./django-unfold-admin.md) — admin where `StaticFilesStorage` fallback prevents manifest failures
 
 ---
 
@@ -337,4 +336,4 @@ False positives avoided: import check is anchored `^\s*(import pytest|from pytes
 
 - Source pattern distilled from a real project — paths use `<PROJECT>` placeholders; original change archived as `openspec/changes/archive/<date>-enforce-django-test-only`
 - Guard source (in target project): `.opencode/commands/guard.sh:1`, workflow: `.github/workflows/test-contract.yml:1`
-- Vault conventions: [[django|Django Hub]] — wikilinks portability; `.*/` at vault `.gitignore:59`
+- Vault conventions: [Django Hub](./django.md) — wikilinks portability; `.*/` at vault `.gitignore:59`

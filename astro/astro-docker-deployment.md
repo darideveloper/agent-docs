@@ -1,6 +1,5 @@
 ---
 created: 2026-07-26
-updated: 2026-09-17
 tags:
   - astro
   - docker
@@ -11,7 +10,7 @@ tags:
 type: resource
 status: active
 source: templates://astro/astro-docker-deployment.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 

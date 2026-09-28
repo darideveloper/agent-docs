@@ -14,9 +14,9 @@ This repo IS upstream. `astro/` + `django/` files here are vendored OUT to proje
 
 ## Rules for agents
 1. Edit canonicals directly here (this is the exception to the downstream "vendor is read-only" rule).
-2. Keep `source: templates://<stack>/<file>` + `version: YYYY-MM-DD+<short-hash>` headers intact; bump version on edit.
-3. When adding/removing a template file, update `manifest.json` (base vs layer, description) in the same change.
-4. Generic improvements only — never commit project-specific content, client data, or secrets. Example keys use placeholders (`sk_test_placeholder`, `SECRET_KEY=change-me`).
+2. Keep `source: templates://<stack>/<file>` + `version: YYYY-MM-DD+<short-hash>` headers intact; bump `version:` on edit (no `updated:` field — single truth).
+3. When adding/removing a template file, update `manifest.json` (base vs layer, description) + hub (`django.md`/`astro.md`) in the same change.
+4. Generic improvements only — never commit project-specific content, client data, or secrets. Example keys use placeholders (`sk_test_placeholder`, `sk_live_placeholder`, `SECRET_KEY=change-me`).
 5. Before committing `docs/`-adjacent changes: `grep -R "sk_live\|sk_test\|SECRET_KEY=\|PASSWORD" astro/ django/` should show placeholders only.
-6. Pull smoke test after manifest changes: `./pull.sh --stack astro --layers i18n,react-islands --yes --dest /tmp-pull/docs` (or `--stack django --yes` for base-only).
-7. Promote smoke after promote.sh changes: clean pull → `--check` all UP-TO-DATE; touch one vendor file → DIVERGED + patch; header-stamped new file → NEW + copy/snippet; `*.local.md` edits ignored.
+6. Pull smoke test after manifest changes (idempotent, clean DEST first): `rm -rf /tmp/pull-test && ./pull.sh --stack astro --layers i18n,react-islands --yes --dest /tmp/pull-test/docs` (or `--stack django --layers redis --yes` for django+layer).
+7. Promote smoke after promote.sh changes: clean pull → `promote.sh --check` all UP-TO-DATE (online); content-edit one vendor file → DIVERGED + patch (`touch` alone stays UP-TO-DATE); header-stamped new file → NEW + copy outside `docs/` + `files:[]` snippet; `*.local.md` edits ignored; offline → UNKNOWN.

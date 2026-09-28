@@ -1,6 +1,5 @@
 ---
 created: 2026-09-03
-updated: 2026-09-03
 tags:
   - django
   - admin
@@ -10,7 +9,7 @@ tags:
 type: resource
 status: active
 source: templates://django/django-excel-export.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 
@@ -218,7 +217,7 @@ RFC 5987 `filename*` required for non-ASCII file names.
 from unfold.admin import ModelAdmin
 from unfold.decorators import action
 
-class ModelAdminUnfoldBase(ModelAdmin):
+class ModelAdminUnfoldExportBase(ModelAdmin):
     sidebar_icon = "database"
     compressed_fields = True
     warn_unsaved_form = True
@@ -305,10 +304,10 @@ class AppSettingsAdmin(SingletonModelAdmin, <APP_MIXIN>, ModelAdminUnfoldBase):
 
 # Non-app models: keep ModelAdminUnfoldBase so header button never appears outside <APP_LABEL>
 @admin.register(Brand)
-class BrandAdmin(ModelAdminUnfoldBase): ...
+class BrandAdmin(ModelAdminUnfoldExportBase): ...
 ```
 
-If a third-party admin already inherits a base (e.g. `BaseTokenAdmin`), put `ModelAdminUnfoldBase` first in MRO: `class TokenAdmin(ModelAdminUnfoldBase, BaseTokenAdmin):`.
+If a third-party admin already inherits a base (e.g. `BaseTokenAdmin`), put `ModelAdminUnfoldBase` first in MRO: `class TokenAdmin(ModelAdminUnfoldExportBase, BaseTokenAdmin):`.
 
 **Convention (`AGENTS.md`):** New models → inherit `ModelAdminUnfoldBase` (auto bulk exports); `<APP_LABEL>` members → inherit `<APP_BASE>` (also header export). `build_full_app_workbook(app_label="<APP_LABEL>")` discovers via `apps.get_models()` filtered by `app_label`, sorted — no per-model wiring, new `<APP_LABEL>` models appear automatically after registration. Keep all bases/mixins in single file `project/admin_base.py`.
 
@@ -399,7 +398,7 @@ Already implemented: `except (OperationalError, ProgrammingError): return FALLBA
    - Keep `FALLBACK_COLOR = "#2563EB"` generic blue or set your brand hex; adapt or remove `_primary_color()` DB block if no brand table.
 
 4. **Wire ModelAdmins**
-   - Bulk-only (non-`<APP_LABEL>`): `class MyModelAdmin(ModelAdminUnfoldBase): …`
+   - Bulk-only (non-`<APP_LABEL>`): `class MyModelAdmin(ModelAdminUnfoldExportBase): …`
    - `<APP_LABEL>` member: `class YourAppMemberAdmin(<APP_BASE>): …` — header on both changelist + changeform.
    - Singleton (if any): `class SingletonAdmin(SingletonModelAdmin, <APP_MIXIN>, ModelAdminUnfoldBase): actions_list = ["export_all"]; actions_detail = ["export_all"]`.
    - Read-only: keep `has_change_permission=False` — bulk actions still work via `view`.

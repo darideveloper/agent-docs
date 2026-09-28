@@ -1,6 +1,5 @@
 ---
 created: 2026-08-10
-updated: 2026-08-10
 tags:
   - django
   - drf
@@ -10,13 +9,13 @@ tags:
 type: resource
 status: active
 source: templates://django/django-drf.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 
 # Django REST Framework (DRF) Implementation Guide (Optional, English Default)
 
-> Optional — adopt only if the project exposes a REST API. DRF-only sections (Token auth, `TokenAdmin`) are guarded; omit if no DRF. Canonical API prefix is `/api/` (router root). `project/urls.py` snippet here merges with [[django-project-setup|Project Setup]] §10 — do not overwrite the admin redirect.
+> Optional — adopt only if the project exposes a REST API. DRF-only sections (Token auth, `TokenAdmin`) are guarded; omit if no DRF. Canonical API prefix is `/api/` (router root). `project/urls.py` snippet here merges with [Project Setup](./django-project-setup.md) §10 — do not overwrite the admin redirect.
 
 This document is a reusable blueprint for wiring **Django REST Framework** into any Django project using a consistent, production-ready set of patterns: global pagination, a custom exception handler, dual authentication, viewsets with dynamic serializers, and public proxy endpoints.
 
@@ -124,7 +123,7 @@ class CustomPageNumberPagination(PageNumberPagination):
 - `page_size` — default items per page (overrides the `PAGE_SIZE` setting).
 - `page_size_query_param` — client-side override parameter name (`?page_size=50`).
 - `max_page_size` — hard cap so clients cannot request huge pages.
-- `get_paginated_response` — enriches the envelope with `page`, `page_size` and `total_pages` metadata. (Identical to the class shipped in the [[django-project-setup|Project Setup Guide]], so both docs stay in sync.)
+- `get_paginated_response` — enriches the envelope with `page`, `page_size` and `total_pages` metadata. (Identical to the class shipped in the [Project Setup Guide](./django-project-setup.md), so both docs stay in sync.)
 
 ### Response shape
 
@@ -217,7 +216,7 @@ Two authentication schemes are enabled globally:
 - **TokenAuthentication** — for API clients (e.g. another backend, a landing page server). The client sends a token in the `Authorization` header:
 
   ```
-  Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b
+  Authorization: Token <your-token>  # e.g. Token $CATALOG_API_TOKEN
   ```
 
 - **SessionAuthentication** — for browser-based clients already logged into Django (e.g. the admin or the browsable API).
@@ -332,7 +331,7 @@ class Article(models.Model):
 > The sample model omits admin-visible texts (`verbose_name` on every field,
 > `Meta.verbose_name`/`verbose_name_plural`, content-based `__str__`) for
 > brevity. Real models in this ecosystem must follow the
-> [[django-model-definitions|Model Definitions]] convention.
+> [Model Definitions](./django-model-definitions.md) convention.
 
 #### 8.1.1 List/Summary serializer — explicit field list
 
@@ -475,7 +474,7 @@ Key points:
 
 Use a DRF router so the viewset maps to RESTful URLs automatically, including a browsable API-root listing.
 
-Create `project/urls.py` (merge with [[django-project-setup]] §10 — keep the admin redirect and `import project.admin`):
+Create `project/urls.py` (merge with [django-project-setup](./django-project-setup.md) §10 — keep the admin redirect and `import project.admin`):
 
 ```python
 from django.urls import path, include
@@ -597,7 +596,7 @@ GET /api/articles/?lang=en&author=Jane%20Doe
 
 ## 13. Testing
 
-DRF ships `APITestCase`, which provides a `client` with handy helpers. A base class keeps auth and read-only checks consistent across viewsets. If [[django-fixtures|Fixtures]] is adopted, call `base_loaddata` in `setUp` for required reference rows.
+DRF ships `APITestCase`, which provides a `client` with handy helpers. A base class keeps auth and read-only checks consistent across viewsets. If [Fixtures](./django-fixtures.md) is adopted, call `base_loaddata` in `setUp` for required reference rows.
 
 ```python
 from django.contrib.auth.models import User
@@ -692,8 +691,8 @@ self.client.credentials(HTTP_AUTHORIZATION=f"Token {token.key}")
 
 ## See also
 
-- [[django-project-setup|Project Setup Guide]] — project scaffolding; the canonical
+- [Project Setup Guide](./django-project-setup.md) — project scaffolding; the canonical
   `REST_FRAMEWORK` dict, pagination and exception handler blocks this guide reuses.
-- [[django-model-definitions|Model Definitions]] — admin-visible texts for the
+- [Model Definitions](./django-model-definitions.md) — admin-visible texts for the
   models your serializers expose.
-- [[django-unfold-admin|Unfold Admin Theme]] — the admin where DRF Tokens are managed.
+- [Unfold Admin Theme](./django-unfold-admin.md) — the admin where DRF Tokens are managed.

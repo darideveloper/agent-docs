@@ -1,6 +1,5 @@
 ---
 created: 2026-08-11
-updated: 2026-08-11
 tags:
   - gsap
   - scrolltrigger
@@ -11,7 +10,7 @@ tags:
 type: resource
 status: active
 source: templates://astro/gsap-scrolltrigger/04-scroll-effects-marquee-and-counters.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 
@@ -374,3 +373,6 @@ animationManager.registerEntrance(tl)
 ---
 
 Next: [05-accessibility-and-pitfalls.md](./05-accessibility-and-pitfalls.md).
+
+
+> V1 lifecycle ([Transitions](../astro-client-side-page-transitions.md) §5): section-presence guard + immediate init() + astro:page-load re-init + astro:after-swap cleanup + ScrollTrigger.refresh(). Do not call init once without listeners when <ClientRouter /> is ON.

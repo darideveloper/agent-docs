@@ -1,6 +1,5 @@
 ---
 created: 2026-08-05
-updated: 2026-08-05
 tags:
   - astro
   - architecture
@@ -10,13 +9,13 @@ tags:
 type: resource
 status: active
 source: templates://astro/component-dependencies-guide.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 
 # Component Dependency Map — Guide
 
-How to produce and maintain the per-project `component-dependencies.md` (see [[component-dependencies-template]]).
+How to produce and maintain the per-project `component-dependencies.md` (see [component-dependencies-template](./component-dependencies-template.md)).
 The template is the copyable skeleton; this file is the method behind it.
 
 Applies to any Astro project. The mechanics (pages → components → shared leaves) also transfer to other component frameworks.
@@ -60,13 +59,13 @@ Then walk each page top-down: which component does it import, what do those impo
 Tick what this project has, then document it:
 
 - [ ] **Routing**: file-based vs single catch-all `[...path].astro` + `getStaticPaths()` + `COMPONENT_MAP`
-- [ ] **i18n**: present or not (see [[astro-i18n]])
-- [ ] **Islands**: React/Vue/Svelte components inside `.astro` files (see [[astro-react-islands]])
-- [ ] **UI library**: vanilla components vs shadcn/Radix `ui/` layer (see [[astro-atomic-components]])
+- [ ] **i18n**: present or not (see [astro-i18n](./astro-i18n.md))
+- [ ] **Islands**: React/Vue/Svelte components inside `.astro` files (see [astro-react-islands](./astro-react-islands.md))
+- [ ] **UI library**: vanilla components vs shadcn/Radix `ui/` layer (see [astro-atomic-components](./astro-atomic-components.md))
 - [ ] **Content collections** / CMS-driven pages
 - [ ] **Design-system / showcase page** (noindex, outside the runtime page tree)
-- [ ] **SEO chain** (see [[astro-seo]])
-- [ ] **Data layer**: `site-config`, `consts`, stores (see [[astro-site-config]], [[astro-zustand-zod]])
+- [ ] **SEO chain** (see [astro-seo](./astro-seo.md))
+- [ ] **Data layer**: `site-config`, `consts`, stores (see [astro-site-config](./astro-site-config.md), [astro-zustand-zod](./astro-zustand-zod.md))
 - [ ] **API routes** (`*.ts` in `src/pages/`) — no components, but part of the route map
 
 ## Keeping it in sync
@@ -79,9 +78,9 @@ Leaves reachable from no page = dead code candidates. During a map pass, list th
 
 ## Related
 
-- [[component-dependencies-template]]
-- [[astro-atomic-components]]
-- [[astro-react-islands]]
-- [[astro-i18n]]
-- [[astro-site-config]]
-- [[astro-seo]]
+- [component-dependencies-template](./component-dependencies-template.md)
+- [astro-atomic-components](./astro-atomic-components.md)
+- [astro-react-islands](./astro-react-islands.md)
+- [astro-i18n](./astro-i18n.md)
+- [astro-site-config](./astro-site-config.md)
+- [astro-seo](./astro-seo.md)

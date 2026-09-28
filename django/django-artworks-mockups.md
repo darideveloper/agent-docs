@@ -1,6 +1,5 @@
 ---
 created: 2026-08-29
-updated: 2026-08-29
 tags:
   - django
   - artworks
@@ -12,7 +11,7 @@ tags:
 type: design
 status: active
 source: templates://django/django-artworks-mockups.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 

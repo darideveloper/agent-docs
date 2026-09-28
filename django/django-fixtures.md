@@ -1,6 +1,5 @@
 ---
 created: 2026-08-09
-updated: 2026-08-09
 tags:
   - django
   - fixtures
@@ -11,7 +10,7 @@ tags:
 type: resource
 status: active
 source: templates://django/django-fixtures.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 
@@ -373,7 +372,7 @@ environment).
 Models (`catalog/models.py`):
 
 ```python
-# Worked example only (book store). Real models must follow [[django-model-definitions]].
+# Worked example only (book store). Real models must follow [django-model-definitions](./django-model-definitions.md).
 class Category(models.Model):
     name = models.CharField(max_length=255, verbose_name="Name")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Created at")

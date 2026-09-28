@@ -1,6 +1,5 @@
 ---
 created: 2026-04-17
-updated: 2026-07-26
 tags:
   - astro
   - i18n
@@ -9,12 +8,14 @@ tags:
 type: resource
 status: active
 source: templates://astro/astro-i18n.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 
 # Internationalization (i18n) System Documentation
 
+
+> Domain tokens (Home/Blog/Portfolio/COMPONENT_MAP) are illustrative examples — replace with project routes.
 > **Opt-in layer.** Precondition: [Base config](./astro-base-config.md). Skip if single-language.
 
 This document describes the custom i18n system used in this project, designed for Astro with localized routing and centralized translation management.
@@ -262,7 +263,7 @@ export async function getStaticPathsLangs() {
 
 ## 7. Usage in Components
 
-Keys named `description`/`hint`/`body`/`content`/`bio` render as markdown via [[astro-markdown#6-data-source-variants]] (`Markdown` atom or `renderInline`); keys named `title`/`label`/`cta`/`nav.*` stay plain `{t("…")}`.
+Keys named `description`/`hint`/`body`/`content`/`bio` render as markdown via [astro-markdown#6-data-source-variants](./astro-markdown.md#6-data-source-variants) (`Markdown` atom or `renderInline`); keys named `title`/`label`/`cta`/`nav.*` stay plain `{t("…")}`.
 
 ### Astro Components
 ```astro
@@ -336,7 +337,7 @@ export function getPageKeyFromUrl(url: URL): PageKey | null {
 
 ## 8. SEO Localization (`BaseSEO.astro`)
 
-The SEO component (see [[astro-seo]]) automatically resolves metadata based on `pageKey` and `lang`:
+The SEO component (see [astro-seo](./astro-seo.md)) automatically resolves metadata based on `pageKey` and `lang`:
 
 ```astro
 ---
@@ -480,7 +481,7 @@ console.log("✅ i18n validation passed!");
 // Base: "build". +i18n: "build:i18n". +i18n+markdown: "build:full".
 {
   "scripts": {
-    "dev": "astro dev",
+    "dev": "portless run pnpm astro dev"  # canonical: portless run (see base-config/portless docs),
     "build": "pnpm validate-imports && astro build",
     "build:i18n": "pnpm validate-i18n && pnpm validate-imports && astro build",
     "build:full": "pnpm validate-i18n && pnpm validate-imports && astro build && pnpm validate-markdown",
@@ -492,7 +493,7 @@ console.log("✅ i18n validation passed!");
 }
 ```
 
-`validate-markdown` runs post-build (scans `dist/`) → see [[astro-markdown#10-validation-build-wiring]].
+`validate-markdown` runs post-build (scans `dist/`) → see [astro-markdown#10-validation-build-wiring](./astro-markdown.md#10-validation-build-wiring).
 
 > Canonical scripts live in [astro-base-config](./astro-base-config.md) §3. Validators are conditional: `validate-i18n` only with this layer, `validate-markdown` only with the Markdown layer, `validate-imports` always.
 
@@ -586,7 +587,7 @@ Then:
 
 ## 12. Connection to Other Patterns
 
-- SEO metadata uses i18n keys for page titles/descriptions/keywords → see [[astro-seo]]
-- React islands receive translations as props → see [[astro-react-islands]]
-- Language-specific business data (e.g. vehicle features) follows the same pattern → see [[astro-site-config]]
-- i18n + Client Router (View Transitions) behavior — localized links, `<html lang>` updates, hreflang swaps → see [[astro-client-side-page-transitions]]
+- SEO metadata uses i18n keys for page titles/descriptions/keywords → see [astro-seo](./astro-seo.md)
+- React islands receive translations as props → see [astro-react-islands](./astro-react-islands.md)
+- Language-specific business data (e.g. vehicle features) follows the same pattern → see [astro-site-config](./astro-site-config.md)
+- i18n + Client Router (View Transitions) behavior — localized links, `<html lang>` updates, hreflang swaps → see [astro-client-side-page-transitions](./astro-client-side-page-transitions.md)

@@ -1,6 +1,5 @@
 ---
 created: 2026-04-21
-updated: 2026-09-17
 tags:
   - django
   - python
@@ -9,7 +8,7 @@ tags:
 type: area-note
 status: active
 source: templates://django/django.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 
@@ -17,44 +16,43 @@ version: 2026-09-17+4cf710f
 
 Django is a high-level Python web framework that encourages rapid development and clean, pragmatic design. It handles much of the complexity of web development, allowing you to focus on writing your app without needing to reinvent the wheel.
 
-Reusable template — English default (`en-us`, `America/Mexico_City`). Placeholders: `project` package, `{app_name}`/`<APP_LABEL>`, `<MODEL>`, `<MAIN_APP>` loader app. Canonical API prefix `/api/`.
+Reusable template — English default (`en-us`, `America/Mexico_City`). Placeholders: `project` package, `<APP_LABEL>`, `<MODEL>`. Canonical API prefix `/api/`.
 
 ### **Core (copy for every project)**
-*   [[django-project-setup|Project Setup Guide]] — scaffolding; links out for storage/tests/fixtures/admin bases
-*   [[django-model-definitions|Model Definitions]] — English admin-visible texts
-*   [[django-unfold-admin|Unfold Admin Theme]] — canonical `project/admin_base.py`, auto sidebar, `base_site.html`
-*   [[django-drf|DRF Implementation Guide]] — optional only if REST API; `/api/` router
-*   [[django-media-storage|Media Storage Configuration]] — canonical `STORAGES` + `IS_TESTING`
-*   [[django-testing-contract|Testing Contract (Django-only Runner)]] — canonical test runner + `STORAGES`
-*   [[django-fixtures|Fixed Data Loading with Django Fixtures]] — loader in `<MAIN_APP>`
+*   [Project Setup Guide](./django-project-setup.md) — scaffolding; links out for storage/tests/fixtures/admin bases
+*   [Model Definitions](./django-model-definitions.md) — English admin-visible texts
+*   [Unfold Admin Theme](./django-unfold-admin.md) — canonical `project/admin_base.py`, auto sidebar, `base_site.html`
+*   [DRF Implementation Guide](./django-drf.md) — default ON; `/api/` router (use minimal non-DRF urls variant if no API)
+*   [Media Storage Configuration](./django-media-storage.md) — canonical `STORAGES` + `IS_TESTING`
+*   [Testing Contract (Django-only Runner)](./django-testing-contract.md) — test runner (STORAGES canonical lives in media-storage)
+*   [Fixed Data Loading with Django Fixtures](./django-fixtures.md) — loader in `<APP_LABEL>` main app
 
 ### **Optional (opt-in)**
-*   [[django-redis|Redis in Django Integration Guide]] — caching/Celery, full `REDIS_URL`
-*   [[django-excel-export|Excel Export Integration]] — openpyxl, imports base from unfold doc
-*   [[django-bruno|Bruno API Client Guide]] — `/api/` collections
-*   [[django-local-subdomain-setup|Local Development & Subdomain Setup]] — portless + `dev.sh`
-*   [[django-worktrees|Git Worktrees + Portless (Django)]] — one checkout per branch, sibling `.localhost` URLs, `worktree-new/done.sh`
-*   [[django-cloudflare-tunnel|Cloudflare Tunnel Setup]] — dev exposure, merged hosts
-*   [[django-i18n-es-admin|Spanish Django Admin]] — OPT-IN Spanish variant, skip for English default
-*   [[django-image-copy-link|Image Copy Link Utility]] — English `Copy link`, per-model `Media`
+*   [Redis in Django Integration Guide](./django-redis.md) — caching/Celery, full `REDIS_URL`
+*   [Excel Export Integration](./django-excel-export.md) — openpyxl, separate export flavor `ModelAdminUnfoldExportBase`
+*   [Bruno API Client Guide](./django-bruno.md) — `/api/` collections
+*   [Local Development & Subdomain Setup](./django-local-subdomain-setup.md) — portless + `dev.sh`
+*   [Git Worktrees + Portless (Django)](./django-worktrees.md) — one checkout per branch, sibling `.localhost` URLs, `worktree-new/done.sh`
+*   [Cloudflare Tunnel Setup](./django-cloudflare-tunnel.md) — dev exposure, merged hosts
+*   [Spanish Django Admin](./django-i18n-es-admin.md) — OPT-IN Spanish variant, skip for English default
+*   [Image Copy Link Utility](./django-image-copy-link.md) — English `Copy link`, per-model `Media`
 
 ### **Worked examples (do not copy as template)**
-*   [[stripe-subscriptions|Stripe Subscriptions Architecture]]
-*   [[stripe-account-setup|Stripe Account Setup & Checklist]]
-*   [[testing-stripe|Testing Stripe Subscriptions]]
-*   [[django-artworks-mockups|Artwork Room Mockups (Design Exploration)]]
-*   [[mermaid-diagram-generation|Mermaid Diagram Generation]]
+*   [Stripe Subscriptions Architecture](./stripe-subscriptions.md)
+*   [Stripe Account Setup & Checklist](./stripe-account-setup.md)
+*   [Testing Stripe Subscriptions](./testing-stripe.md)
+*   [Artwork Room Mockups (Design Exploration)](./django-artworks-mockups.md)
 
-### **Wikilinks & Portability**
+Mermaid Diagram Generation — see https://github.com/darideveloper/agent-docs (vault pointer, no vendored doc).
 
-These docs use Obsidian `[[wikilinks]]`. When copying them into a new Django
+### **Links & Portability**
+
+These docs use relative Markdown links `[label](./file.md)`. When copying them into a new Django
 project, the agent MUST handle links as follows:
 
-1. Short-form links (`[[django-project-setup|label]]`) point to sibling docs in
+1. Relative links (`[label](./django-project-setup.md)`) point to sibling docs in
    the same folder — keep them as-is.
-2. Vault-path links to sibling docs (e.g. `[[django-foo]]`)
-   → convert to short-form `[[django-foo|label]]`.
-3. Vault-path links to external resources not included in the project (e.g.
+2. Links to external resources not included in the project (e.g.
    `Redis (external)`) have NO local equivalent — replace the
    link with a plain text label (e.g. `Redis (external)`).
 

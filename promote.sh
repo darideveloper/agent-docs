@@ -65,15 +65,17 @@ fi
 derive_rel() {
   local f="$1"
   local src
-  src=$(grep -m1 "^source:" "$f" 2>/dev/null | sed 's/source:\s*templates:\/\///' || echo "")
+  src=$(grep -m1 "^source:" "$f" 2>/dev/null | sed 's/source: *templates:\/\///' || echo "")
   if [[ -n "$src" && "$src" != "unknown" ]]; then
     echo "$src"
   else
-    local base
+    local base rel_sub
     base=$(basename "$f")
-    if [[ "$f" == *"gsap-scrolltrigger"* ]]; then
-      echo "astro/gsap-scrolltrigger/$base"
-    elif grep -q "django" "$f" 2>/dev/null; then
+    # Preserve nested layer paths relative to DEST (e.g. gsap-scrolltrigger/01-....md)
+    rel_sub="${f#"$DEST"/}"
+    if [[ "$rel_sub" == *"/"* ]]; then
+      if [[ -n "$STACK_HINT" ]]; then echo "${STACK_HINT}/${rel_sub}"; else echo "astro/${rel_sub}"; fi
+    elif [[ "$base" == django-* || "$base" == stripe-* || "$base" == testing-stripe* ]]; then
       echo "django/$base"
     elif [[ -n "$STACK_HINT" ]]; then
       echo "${STACK_HINT}/$base"
@@ -117,7 +119,7 @@ classify() {
 # Fail-closed secrets gate; placeholders pass. Warnings (project signals) print only.
 sanitize_gate() {
   local f="$1"
-  if grep -q "sk_live" "$f" 2>/dev/null; then echo "BLOCKED: $f contains sk_live" >&2; return 1; fi
+  if grep -E "sk_live" "$f" 2>/dev/null | grep -v -E "sk_live_placeholder|<[^>]+>|example|placeholder" | grep -q .; then echo "BLOCKED: $f contains sk_live" >&2; return 1; fi
   if grep -q "BEGIN .*PRIVATE KEY" "$f" 2>/dev/null; then echo "BLOCKED: $f contains a private key" >&2; return 1; fi
   # sk_test / SECRET_KEY= / PASSWORD only blocked when NOT a placeholder line
   if grep -E "sk_test|SECRET_KEY=|PASSWORD" "$f" 2>/dev/null | grep -v -E "sk_test_placeholder|SECRET_KEY=change-me|<[^>]+>|example|placeholder|paste-token-here" | grep -q .; then
@@ -135,7 +137,7 @@ emit_modify() {
   {
     echo "# Source: templates://$rel"
     echo "# Suggested-PR: ${REPO}: $rel"
-    echo "# Note: source/version stamp lines are noise (pull.sh re-stamps, upstream re-stamps on merge); review content hunks."
+    echo "# Note: strip #-comment lines before git apply: grep -v '^#' $patch_file | git apply"
     diff -u "$upstream" "$f" || true
   } > "$patch_file"
   echo "Patch written to: $patch_file"
@@ -143,19 +145,20 @@ emit_modify() {
 }
 
 emit_new() {
-  local f="$1" rel="$2" base dest snippet stack
+  local f="$1" rel="$2" base dest snippet stack rel_file
   base=$(basename "$f" .md)
-  if [[ -n "$OUT" ]]; then mkdir -p "$OUT"; dest="$OUT/$base.md"
-  else dest="${f%.md}.add.md"; fi
+  rel_file="${rel#*/}"
+  if [[ -n "$OUT" ]]; then mkdir -p "$OUT/$(dirname "$rel_file")"; dest="$OUT/$rel_file"
+  else mkdir -p ./patches-promote; dest="./patches-promote/$base.md"; fi
   cp "$f" "$dest"
   stack=$(echo "$rel" | cut -d/ -f1)
   snippet="${dest%.md}.manifest.json.snippet"
   cat > "$snippet" <<EOF
-{ "file": "$(echo "$rel" | cut -d/ -f2-)", "description": "TODO one-line Use-when" }
+{ "files": ["$rel_file"], "description": "TODO one-line Use-when" }
 EOF
-  echo "New file copied to: $dest"
-  echo "Manifest snippet: $snippet (paste under $stack.layers.<new-key> or $stack.base)"
-  echo "Hub hint: add row to $stack/$stack.md opt-in table + keep source: templates://$rel header"
+  echo "New file copied to: $dest (outside docs/ to avoid re-classify)"
+  echo "Manifest snippet: $snippet (paste under $stack.layers.<new-key>.files or $stack.base)"
+  echo "Hub hint (maintainer upstream): add row to $stack/$stack.md table + keep source: templates://$rel header"
 }
 
 if [[ "$CHECK" == "true" ]]; then

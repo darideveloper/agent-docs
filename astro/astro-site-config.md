@@ -1,6 +1,5 @@
 ---
 created: 2026-07-26
-updated: 2026-09-17
 tags:
   - astro
   - configuration
@@ -10,7 +9,7 @@ tags:
 type: resource
 status: active
 source: templates://astro/astro-site-config.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 
@@ -248,5 +247,5 @@ Then:
 
 ## 8. Connection to Other Patterns
 
-- `BUSINESS_DATA` is consumed by `BaseSEO.astro` for JSON-LD → see [[astro-seo]]
-- `PUBLIC_API_BASE_URL` env var is passed through Docker build args → see [[astro-docker-deployment]]
+- `BUSINESS_DATA` is consumed by `BaseSEO.astro` for JSON-LD → see [astro-seo](./astro-seo.md)
+- `PUBLIC_API_BASE_URL` env var is passed through Docker build args → see [astro-docker-deployment](./astro-docker-deployment.md)

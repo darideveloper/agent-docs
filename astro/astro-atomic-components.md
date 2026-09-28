@@ -1,6 +1,5 @@
 ---
 created: 2026-07-26
-updated: 2026-08-05
 tags:
   - astro
   - react
@@ -11,7 +10,7 @@ tags:
 type: resource
 status: active
 source: templates://astro/astro-atomic-components.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 
@@ -120,8 +119,8 @@ Only exists when using a third-party component library. Never import from `ui/` 
 ### shadcn
 
 ```bash
-pnpx shadcn init
-pnpx shadcn add button checkbox input label radio-group select textarea
+pnpm dlx shadcn init
+pnpm dlx shadcn add button checkbox input label radio-group select textarea
 ```
 
 Generated files live in `src/components/ui/`. Do not edit directly — reinstall from shadcn if you need updates.
@@ -356,8 +355,8 @@ Each atom is a self-contained component with Tailwind styles that binds the Zust
 
 ```bash
 mkdir -p src/components/{ui,atoms,molecules,organisms}
-pnpx shadcn init
-pnpx shadcn add button checkbox input label radio-group select textarea
+pnpm dlx shadcn init
+pnpm dlx shadcn add button checkbox input label radio-group select textarea
 ```
 
 For each shadcn component, create a matching presentation wrapper in `atoms/`.
@@ -373,5 +372,5 @@ For each shadcn component, create a matching presentation wrapper in `atoms/`.
 
 ## 7. Connection to Other Patterns
 
-- Vanilla atoms use `useField()` from the Zustand store → see [[astro-zustand-zod]]
-- Astro pages host organisms → see [[astro-react-islands]]
+- Vanilla atoms use `useField()` from the Zustand store → see [astro-zustand-zod](./astro-zustand-zod.md)
+- Astro pages host organisms → see [astro-react-islands](./astro-react-islands.md)

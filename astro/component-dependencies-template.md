@@ -1,6 +1,5 @@
 ---
 created: 2026-08-05
-updated: 2026-08-05
 tags:
   - astro
   - components
@@ -10,7 +9,7 @@ tags:
 type: template
 status: active
 source: templates://astro/component-dependencies-template.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 
@@ -18,7 +17,7 @@ version: 2026-09-17+4cf710f
 
 > **How to use this template.** Copy this file into the project as `component-dependencies.md`
 > and replace every `[…]` placeholder. Delete this callout and the italic fill-in hints when done.
-> Read [[component-dependencies-guide]] for the method behind each section.
+> Read [component-dependencies-guide](./component-dependencies-guide.md) for the method behind each section.
 
 Living reference of how pages compose components (and subcomponents) in this project.
 
@@ -126,9 +125,9 @@ Layout.astro
 
 ## Related
 
-- [[component-dependencies-guide]]
-- [[astro-atomic-components]]
-- [[astro-react-islands]]
-- [[astro-i18n]]
-- [[astro-site-config]]
-- [[astro-seo]]
+- [component-dependencies-guide](./component-dependencies-guide.md)
+- [astro-atomic-components](./astro-atomic-components.md)
+- [astro-react-islands](./astro-react-islands.md)
+- [astro-i18n](./astro-i18n.md)
+- [astro-site-config](./astro-site-config.md)
+- [astro-seo](./astro-seo.md)

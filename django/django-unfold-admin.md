@@ -1,6 +1,5 @@
 ---
 created: 2026-04-18
-updated: 2026-04-18
 tags:
   - django
   - admin
@@ -9,19 +8,19 @@ tags:
 type: resource
 status: active
 source: templates://django/django-unfold-admin.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 
 # Django Unfold Integration Guide (Reusable Template, English Default)
 
-> English by default. For Spanish admin, see [[django-i18n-es-admin|Spanish Django Admin]] opt-in (do not include `range_date_filter_es.js` in English projects). Canonical admin base `project/admin_base.py::ModelAdminUnfoldBase` is defined here (§7.2) — [[django-project-setup|Project Setup]] imports from it. The excel-export guide intentionally defines a separate export flavor (same class name + bulk actions) — two flavors, see excel §5.
+> English by default. For Spanish admin, see [Spanish Django Admin](./django-i18n-es-admin.md) opt-in (do not include `range_date_filter_es.js` in English projects). Canonical admin base `project/admin_base.py::ModelAdminUnfoldBase` is defined here (§7.2) — [Project Setup](./django-project-setup.md) imports from it. The excel-export guide intentionally defines a separate export flavor (same class name + bulk actions) — two flavors, see excel §5.
 
 This document describes how `django-unfold` is integrated into this project to provide a modern, responsive, and customizable Django Admin interface.
 
 ## 0. Prerequisites
 
-Before proceeding, ensure the core infrastructure (Environment Variables, Static Files, and Templates) has been set up following the [[django-project-setup|Project Setup Guide]].
+Before proceeding, ensure the core infrastructure (Environment Variables, Static Files, and Templates) has been set up following the [Project Setup Guide](./django-project-setup.md).
 
 ## 1. Dependencies
 
@@ -53,7 +52,7 @@ INSTALLED_APPS = [
 
 ### 2.2 Static Files & Templates
 
-Ensure root static and templates directories are configured in `settings.py` to allow overriding admin assets, as described in the [[django-project-setup|Project Setup Guide]] §6.
+Ensure root static and templates directories are configured in `settings.py` to allow overriding admin assets, as described in the [Project Setup Guide](./django-project-setup.md) §6.
 
 ## 3. UNFOLD Settings Dictionary
 
@@ -258,7 +257,7 @@ document.addEventListener("DOMContentLoaded", () => {
 ```
 
 ### static/js/range_date_filter_es.js — Spanish-only (OPT-IN, skip in English default)
-Localizes placeholder text for Unfold's range date filters. Only include when [[django-i18n-es-admin]] is adopted.
+Localizes placeholder text for Unfold's range date filters. Only include when [django-i18n-es-admin](./django-i18n-es-admin.md) is adopted.
 ```javascript
 document.addEventListener("DOMContentLoaded", function () {
   const texts = [
@@ -469,9 +468,11 @@ class TokenAdmin(BaseTokenAdmin):
     # for third-party admins needing base behavior use `class X(ModelAdminUnfoldBase, BaseX)`.
     sidebar_icon = "key"
 ```
-### 7.2 Base Admin Class (`project/admin_base.py::ModelAdminUnfoldBase`)
+### 7.2 Plain flavor (ModelAdminUnfoldBase) — export flavor ModelAdminUnfoldExportBase lives separately in [Excel Export](./django-excel-export.md) §5. To combine: class ModelAdminCombined(ModelAdminUnfoldExportBase): actions_row = ["edit"] (export base already includes edit row + bulk exports).
 
-Plain-flavor canonical base. `[[django-project-setup]]` imports from here. NOTE: the excel-export guide defines its own export flavor (same class name + `export_selected` bulk actions) — intentional separate flavor, see excel §5. Provides common UI enhancements like row actions and compressed fields.
+## 7.2 Base Admin Class (`project/admin_base.py::ModelAdminUnfoldBase`)
+
+Plain-flavor canonical base. `[django-project-setup](./django-project-setup.md)` imports from here. NOTE: the excel-export guide defines its own export flavor (same class name + `export_selected` bulk actions) — intentional separate flavor, see excel §5. Provides common UI enhancements like row actions and compressed fields.
 
 ```python
 from unfold.admin import ModelAdmin
@@ -511,7 +512,7 @@ Use Unfold-native button patterns everywhere; **custom-inject a button only for 
 - **Server actions** → declare them in `actions_detail` (change-form header) or `actions_row` (changelist rows) with `@action(description=..., url_path=..., permissions=[...])`. Conditional visibility is enforced only when `permissions=[...]` is passed, which wires the `has_<action>_permission` method.
 - **Copy-link buttons** → the only exception. Inject `copy_button_extra_attrs` (a `mark_safe` attribute string: `type="button" data-copy-url="<url>"`) from a `change_view` override, then render the button in an `object-tools-items` override through `{% component "unfold/components/button.html" %}` with `extra_attrs=copy_button_extra_attrs`. `static/js/copy_clipboard.js` (loaded via the admin's `Media`) wires the click-to-copy.
 
-Any model admin with header buttons (`<app>/admin.py` + `admin/<app>/<model>/change_form.html`) and a change-form copy button (`<app>/admin.py` + `admin/<app>/<model>/change_form.html`) follows this pattern. See [[django-image-copy-link|Image Copy Link]].
+Any model admin with header buttons (`<app>/admin.py` + `admin/<app>/<model>/change_form.html`) and a change-form copy button (`<app>/admin.py` + `admin/<app>/<model>/change_form.html`) follows this pattern. See [Image Copy Link](./django-image-copy-link.md).
 
 ## 8. Layout Constraints
 

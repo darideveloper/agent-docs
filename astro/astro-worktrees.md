@@ -1,6 +1,5 @@
 ---
 created: 2026-09-09
-updated: 2026-09-27
 tags:
   - astro
   - git
@@ -10,7 +9,7 @@ tags:
 type: resource
 status: active
 source: templates://astro/astro-worktrees.md
-version: 2026-09-27+0ecb7bf
+version: 2026-09-27+57b0fd3
 
 ---
 
@@ -30,7 +29,7 @@ Parallel branches (features, per-teammate branches, release lines) share a singl
 - Portless installed globally:
 
 ```bash
-npm install -g portless
+pnpm add -g portless  # or: pnpm dlx portless --help (never npm per repo rule)
 ```
 
 ### Portless integration checklist (per project)
@@ -73,7 +72,7 @@ Resolution chain: `PORTLESS_URL → SITE_URL → <prod-domain>` fallback. The fa
 ```bash
 SITE_URL=https://<project>.localhost
 # Only if the project has a backend contract — omit otherwise:
-API_BASE_URL=https://<backend>.localhost
+PUBLIC_API_BASE_URL=https://<backend>.localhost
 API_TOKEN=<paste-token-here>
 ```
 
@@ -228,7 +227,7 @@ Each checkout stops independently with Ctrl+C in its own terminal — the route 
 | Proxy 404 but direct `http://127.0.0.1:<port>/` answers | The `portless run` parent died and the route unregistered — restart the dev server in a persistent terminal. Under AI agents, see "Running under AI agents" in [Portless Dev Workflow](./astro-portless.md) |
 | `.localhost` doesn't resolve (Safari, Firefox) | Run `portless hosts sync` |
 | Port conflict on 443 | Portless falls back to 1355; check `portless status` |
-| `command not found: portless` | Run `npm install -g portless` |
+| `command not found: portless` | Run `pnpm add -g portless  # or: pnpm dlx portless --help (never npm per repo rule)` |
 
 ## Appendix: opencode-worktree Plugin (Opt-in — NOT the default)
 

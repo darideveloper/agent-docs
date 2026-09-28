@@ -1,6 +1,5 @@
 ---
 created: 2026-09-17
-updated: 2026-09-27
 tags:
   - django
   - git
@@ -11,7 +10,7 @@ tags:
 type: resource
 status: active
 source: templates://django/django-worktrees.md
-version: 2026-09-27+0ecb7bf
+version: 2026-09-27+57b0fd3
 
 ---
 
@@ -22,7 +21,7 @@ stable `.localhost` URL automatically — no port juggling, no stash/checkout
 cycles. Placeholders: `<project>` = directory/repo name, `<branch>` = branch
 name, `<PROJECT_PACKAGE>` = Django settings package, `DB_NAME=<project>`.
 
-This builds on [[django-local-subdomain-setup|Local Development & Subdomain Setup]]
+This builds on [Local Development & Subdomain Setup](./django-local-subdomain-setup.md)
 (`dev.sh` + tmux + portless). Read that guide first for the single-checkout base.
 
 ## Why
@@ -153,7 +152,7 @@ DB_ENGINE=django.db.backends.sqlite3
 
 Active proposals under `openspec/changes/*` stay isolated per sibling (only
 `openspec/changes/archive/` is tracked — ignore pair defined in
-[[django-project-setup]] §4). New siblings get the workflow via
+[django-project-setup](./django-project-setup.md) §4). New siblings get the workflow via
 the `.opencode/skills/openspec-*` + `commands/opsx-*.md` markdown sync in
 `worktree-new.sh`. Before merge, copy back only `archive/`.
 
@@ -207,7 +206,7 @@ Full runbook: `docs/django-worktrees.md`.
 ```
 
 > The runbook itself must be tracked: keep the `.gitignore` exception
-> `/docs/*` + `!/docs/django-worktrees.md` (see [[django-project-setup]] §4)
+> `/docs/*` + `!/docs/django-worktrees.md` (see [django-project-setup](./django-project-setup.md) §4)
 > and save this doc as `docs/django-worktrees.md` in the target project.
 
 ## Copy-paste: `worktree-new.sh`
@@ -368,7 +367,7 @@ echo "Merged $BRANCH into $INTO and removed $DIR."
 
 ## Copy-paste: `dev.sh` (worktree-aware)
 
-See [[django-local-subdomain-setup|Local Development & Subdomain Setup]] for
+See [Local Development & Subdomain Setup](./django-local-subdomain-setup.md) for
 the full guide with Cases A/B/C. The worktree-aware core is:
 
 ```bash

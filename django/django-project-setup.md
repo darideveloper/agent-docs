@@ -1,6 +1,5 @@
 ---
 created: 2026-04-18
-updated: 2026-09-27
 tags:
   - django
   - setup
@@ -8,13 +7,13 @@ tags:
 type: resource
 status: active
 source: templates://django/django-project-setup.md
-version: 2026-09-27+0ecb7bf
+version: 2026-09-27+57b0fd3
 
 ---
 
 # Project Setup Guide (Reusable Template, English Default)
 
-> Reusable template for any Django project. Placeholders: `project` = project package, `{app_name}` = domain app. English by default (`LANGUAGE_CODE='en-us'`, `TIME_ZONE="America/Mexico_City"`). For Spanish admin, see [[django-i18n-es-admin|Spanish Django Admin]] opt-in. Conventions: `project/admin_base.py` holds admin bases (plain flavor in [[django-unfold-admin|Unfold Admin Theme]] §7.2; separate export flavor in excel guide §5), storage options in [[django-media-storage|Media Storage]], tests canonical in [[django-testing-contract|Testing Contract]], fixtures in [[django-fixtures|Fixtures]].
+> Reusable template for any Django project. Placeholders: `project` = project package, `{app_name}` = domain app. English by default (`LANGUAGE_CODE='en-us'`, `TIME_ZONE="America/Mexico_City"`). For Spanish admin, see [Spanish Django Admin](./django-i18n-es-admin.md) opt-in. Conventions: `project/admin_base.py` holds admin bases (plain flavor in [Unfold Admin Theme](./django-unfold-admin.md) §7.2; separate export flavor in excel guide §5), storage options in [Media Storage](./django-media-storage.md), tests canonical in [Testing Contract](./django-testing-contract.md), fixtures in [Fixtures](./django-fixtures.md).
 
 Follow these steps to set up a new Django project from scratch.
 
@@ -36,16 +35,16 @@ psycopg>=3.2.3             # PostgreSQL database adapter
 pillow>=11.1.0             # Image processing library
 
 # --- optional extras (install only if the corresponding guide is adopted) ---
-# drf & jwt (see [[django-drf]]):
+# drf & jwt (see [django-drf](./django-drf.md)):
 # djangorestframework>=3.16.1 # REST API toolkit
 # django-filter>=24.3        # Dynamic API filtering
-# admin (see [[django-unfold-admin]]):
+# admin (see [django-unfold-admin](./django-unfold-admin.md)):
 # django-unfold==0.77.1      # Modern Django admin theme (pinned — CSS selectors depend on it)
 # django-solo>=2.3.0         # Singleton models for configuration (only if singletons)
-# storage (see [[django-media-storage]]):
+# storage (see [django-media-storage](./django-media-storage.md)):
 # django-storages>=1.14.4    # Custom storage backends (S3, etc.)
 # boto3>=1.34                # AWS SDK for Python
-# testing (see [[django-testing-contract]]):
+# testing (see [django-testing-contract](./django-testing-contract.md)):
 # selenium>=4.40.0           # Browser automation for E2E tests (only testing extra, never pytest)
 # tools:
 # requests>=2.32.3           # HTTP library for external API calls
@@ -88,7 +87,7 @@ python manage.py startapp {app_name}
 ```
 
 > **Models:** every model created in this project (or replicated later) must
-> follow the [[django-model-definitions|Model Definitions]] convention:
+> follow the [Model Definitions](./django-model-definitions.md) convention:
 > `Meta.verbose_name`/`verbose_name_plural`, `verbose_name` on every field,
 > `help_text` when needed, and a content-based `__str__`.
 
@@ -101,8 +100,8 @@ Initialize a Git repository to track your changes and commit the initial project
 # Initialize git
 git init
 
-# Create .gitignore file (minimal canonical — see [[django-testing-contract]] §2.3;
-# worktree/openspec additions see [[django-worktrees|Git Worktrees]])
+# Create .gitignore file (minimal canonical — see [django-testing-contract](./django-testing-contract.md) §2.3;
+# worktree/openspec additions see [Git Worktrees](./django-worktrees.md))
 cat <<EOF > .gitignore
 __pycache__/
 *.pyc
@@ -132,7 +131,7 @@ openspec/changes/*
 # Client delivery doc (internal, not shipped)
 CLIENT.md
 
-# Docs are ignored except the worktree runbook (tracked per [[django-worktrees]])
+# Docs are ignored except the worktree runbook (tracked per [django-worktrees](./django-worktrees.md))
 /docs/*
 !/docs/django-worktrees.md
 EOF
@@ -152,7 +151,7 @@ git commit -m "initial project"
 ### 5. Environment Infrastructure
 Establish the foundation for environment-variable-first configuration by creating the following files in the project root.
 
-The `.env` file is a **pure selector**: it contains ONLY the `ENV` variable. All other configuration (secrets, debug, hosts, DB, storage, email, AWS) lives in `.env.dev` and `.env.prod` and is duplicated per environment as required. `HOST` uses the `https://project-name.localhost` literal — a copied `.env.dev` is harmless across worktree siblings because settings resolve `PORTLESS_URL → HOST` first (see [[django-worktrees|Git Worktrees]]).
+The `.env` file is a **pure selector**: it contains ONLY the `ENV` variable. All other configuration (secrets, debug, hosts, DB, storage, email, AWS) lives in `.env.dev` and `.env.prod` and is duplicated per environment as required. `HOST` uses the `https://project-name.localhost` literal — a copied `.env.dev` is harmless across worktree siblings because settings resolve `PORTLESS_URL → HOST` first (see [Git Worktrees](./django-worktrees.md)).
 
 > **Note:** If the project does not require email functionality, skip the optional email block below (moved to optional — SMTP is NOT part of core).
 > **Note:** The `SECRET_KEY` should be a randomly generated string of at least 30 characters. Define it in BOTH `.env.dev` and `.env.prod` (the prod value is a placeholder that gets filled at deploy time).
@@ -164,7 +163,7 @@ ENV=dev
 
 **`.env.dev`** (Local development defaults)
 ```env
-SECRET_KEY=randoms-chars
+SECRET_KEY=change-me-min-30-random-chars
 DEBUG=True
 ALLOWED_HOSTS=localhost,127.0.0.1,project-name.localhost
 CORS_ALLOWED_ORIGINS=https://project-name.localhost
@@ -254,19 +253,19 @@ DEBUG = os.getenv("DEBUG", "False") == "True"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
 # Worktree dev loop: portless injects PORTLESS_URL per checkout, so a copied
-# .env.dev resolves each sibling's own domain without edits (see [[django-worktrees]]).
+# .env.dev resolves each sibling's own domain without edits (see [django-worktrees](./django-worktrees.md)).
 HOST = (os.getenv("PORTLESS_URL", "") or os.getenv("HOST", "")).rstrip("/")
 ```
 
 > In dev, each checkout also accepts its own portless domain into
 > `ALLOWED_HOSTS`/`CORS`/`CSRF` from the resolved `HOST` — full block in
-> [[django-local-subdomain-setup|Local Development & Subdomain Setup]] Step 1
-> (required when [[django-worktrees|Git Worktrees]] siblings are used).
+> [Local Development & Subdomain Setup](./django-local-subdomain-setup.md) Step 1
+> (required when [Git Worktrees](./django-worktrees.md) siblings are used).
 
 **Update `INSTALLED_APPS` and `MIDDLEWARE`:**
 ```python
 INSTALLED_APPS = [
-    "unfold",  # only if [[django-unfold-admin]] adopted — must be before django.contrib.admin
+    "unfold",  # only if [django-unfold-admin](./django-unfold-admin.md) adopted — must be before django.contrib.admin
     "unfold.contrib.filters",  # optional unfold extras
     "unfold.contrib.forms",
     "unfold.contrib.inlines",
@@ -274,24 +273,24 @@ INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
     "corsheaders",  # core
-    # "rest_framework",  # DRF-only (see [[django-drf]])
+    # "rest_framework",  # DRF-only (see [django-drf](./django-drf.md))
     # "rest_framework.authtoken",  # DRF Token auth only
     # "solo",  # only if singletons
-    # "storages",  # only if [[django-media-storage]] adopted
+    # "storages",  # only if [django-media-storage](./django-media-storage.md) adopted
     # "{app_name}",  # your domain app from Step 3
 ]
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
-    # ... default middleware
+    # ... default middleware (keep order: Security, Session, Common, Csrf, Auth, Messages, Clickjacking; CorsMiddleware first, WhiteNoise right after SecurityMiddleware)
     "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 ```
 - Add your local application `{app_name}` to `INSTALLED_APPS`.
-- **Admin Theme:** The project uses [[django-unfold-admin|Django Unfold]] for a modern admin interface (optional but recommended).
+- **Admin Theme:** The project uses [Django Unfold](./django-unfold-admin.md) for a modern admin interface (optional but recommended).
 
 ### 7. Database & Storage Strategy
-Implement dynamic logic in `settings.py` to switch backends based on the environment. Canonical storage block lives in [[django-media-storage|Media Storage Configuration]] — do not duplicate it here; the snippet below is the minimal core shape (local + IS_TESTING fallback, see [[django-testing-contract]] §2.2).
+Implement dynamic logic in `settings.py` to switch backends based on the environment. Canonical storage block lives in [Media Storage Configuration](./django-media-storage.md) — do not duplicate it here; the snippet below is the minimal core shape (local + IS_TESTING fallback, see [django-testing-contract](./django-testing-contract.md) §2.2).
 
 **Dynamic Database Selection:**
 ```python
@@ -350,7 +349,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 **Conditional Storage (AWS S3 vs Local):**
 > Full storage configuration details are available in the
-> [[django-media-storage|Media Storage Configuration]] guide.
+> [Media Storage Configuration](./django-media-storage.md) guide.
 ```python
 STORAGE_AWS = os.getenv("STORAGE_AWS") == "True"
 
@@ -381,7 +380,7 @@ if STORAGE_AWS:
     }
 else:
     # Local Storage Configuration — IS_TESTING fallback avoids Whitenoise manifest during `manage.py test`
-    # See [[django-testing-contract]] §2.2 for the full contract (both Path/os.path variants)
+    # See [django-testing-contract](./django-testing-contract.md) §2.2 for the full contract (both Path/os.path variants)
     staticfiles_backend = "django.contrib.staticfiles.storage.StaticFilesStorage" if IS_TESTING else "whitenoise.storage.CompressedManifestStaticFilesStorage"
     STORAGES = {
         "default": {
@@ -457,13 +456,13 @@ EMAILS_NOTIFICATIONS = os.getenv("EMAILS_NOTIFICATIONS", "").split(",")
 ```
 
 ### 9. Validation
-Verify the project configuration and ensure that the test environment is correctly isolated. Canonical runner is `python manage.py test` (see [[django-testing-contract]] — do not use `pytest`).
+Verify the project configuration and ensure that the test environment is correctly isolated. Canonical runner is `python manage.py test` (see [django-testing-contract](./django-testing-contract.md) — do not use `pytest`).
 
 ```bash
 # Verify the complete configuration
 python manage.py check
 
-# Run tests to ensure test-specific database isolation (canonical — see [[django-testing-contract]])
+# Run tests to ensure test-specific database isolation (canonical — see [django-testing-contract](./django-testing-contract.md))
 python manage.py test --verbosity=2
 ```
 
@@ -572,20 +571,20 @@ def custom_exception_handler(exc, context):
 ```
 
 #### project/admin.py
-Customizes the Django Admin for User and Group models using Unfold's components. Admin bases live canonically in `project/admin_base.py::ModelAdminUnfoldBase` (see [[django-unfold-admin|Unfold Admin Theme]] §7.2) — do not redefine the base here.
+Customizes the Django Admin for User and Group models using Unfold's components. Admin bases live canonically in `project/admin_base.py::ModelAdminUnfoldBase` (see [Unfold Admin Theme](./django-unfold-admin.md) §7.2) — do not redefine the base here.
 
 The full `UserAdmin`/`GroupAdmin`/`TokenAdmin` code lives in the
-[[django-unfold-admin|Unfold Admin Theme]] guide (§7.1), which also documents
+[Unfold Admin Theme](./django-unfold-admin.md) guide (§7.1), which also documents
 the required `import project.admin` in `urls.py`. Keep it there — this guide
 does not duplicate it.
 
 > **DRF-only**: `TokenAdmin` / `TokenProxy` (from `rest_framework.authtoken`) are only required if the project uses DRF's `TokenAuthentication`. If not using DRF, omit those imports, the `unregister(TokenProxy)` call, and the `TokenAdmin` class.
 
 #### project/admin_base.py
-Plain-flavor `ModelAdminUnfoldBase` (+ `edit` row action). Canonical plain definition in [[django-unfold-admin]] §7.2. NOTE: the excel-export guide defines its own export flavor (same name + `export_selected` bulk actions) — intentional separate flavor, not an import.
+Plain-flavor `ModelAdminUnfoldBase` (+ `edit` row action). Canonical plain definition in [django-unfold-admin](./django-unfold-admin.md) §7.2. NOTE: the excel-export guide defines its own export flavor (same name + `export_selected` bulk actions) — intentional separate flavor, not an import.
 
 #### project/templates/admin/base_site.html
-Customizes the Django Unfold admin theme. Canonical override is `project/templates/admin/base_site.html` extending `"admin/base.html"` — never extend `unfold/layouts/base.html` directly and never use `base.html` as the override name (see [[django-unfold-admin]] §6).
+Customizes the Django Unfold admin theme. Canonical override is `project/templates/admin/base_site.html` extending `"admin/base.html"` — never extend `unfold/layouts/base.html` directly and never use `base.html` as the override name (see [django-unfold-admin](./django-unfold-admin.md) §6).
 ```html
 {% extends "admin/base.html" %}
 {% load static %}
@@ -680,9 +679,9 @@ def get_test_image(image_name: str = "test.webp") -> SimpleUploadedFile:
 The project includes several dynamic scripts in `static/js/`.
 
 **static/js/copy_clipboard.js**
-Utility for click-to-copy on elements carrying a `data-copy-url` attribute (e.g. the admin copy-link buttons). Full implementation in [[django-image-copy-link|Image Copy Link]] — per-model JS is loaded via `Admin.Media`, not globally in `base_site.html`.
+Utility for click-to-copy on elements carrying a `data-copy-url` attribute (e.g. the admin copy-link buttons). Full implementation in [Image Copy Link](./django-image-copy-link.md) — per-model JS is loaded via `Admin.Media`, not globally in `base_site.html`.
 ```javascript
-// See [[django-image-copy-link]] for the full file.
+// See [django-image-copy-link](./django-image-copy-link.md) for the full file.
 ```
 
 **static/js/script.js**
@@ -725,7 +724,7 @@ After initialization, run the following command in Gemini CLI to populate your p
 
 > Worktree rule: active proposals under `openspec/changes/*` stay isolated per
 > sibling (only `openspec/changes/archive/` is tracked and copied back on merge).
-> Full rule + `.opencode` skills sync → see [[django-worktrees|Git Worktrees]].
+> Full rule + `.opencode` skills sync → see [Git Worktrees](./django-worktrees.md).
 
 ### 14. Deployment (Coolify / Docker)
 The project is configured for containerized deployment using Docker, targeting Coolify. Only core vars are passed as build args below — add optional blocks (email, redis, stripe) only if adopted.
@@ -735,7 +734,7 @@ The `Dockerfile` defines the environment, installs dependencies, and prepares th
 
 ```dockerfile
 # Use Python 3.12 slim image
-FROM python:3.12-slim
+FROM python:3.13-slim
 
 # Set environment variables for Python
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -835,7 +834,7 @@ python manage.py makemigrations --check --noinput
 python manage.py migrate --noinput
 
 # Base data (reference/lookup rows) is required for the system to work.
-# NOTE: base_loaddata exists only if [[django-fixtures|Fixtures]] is adopted
+# NOTE: base_loaddata exists only if [Fixtures](./django-fixtures.md) is adopted
 # (loader lives in <MAIN_APP>/management/commands/). Do NOT run seed_loaddata
 # here — it is environment-specific and should be loaded once manually.
 # python manage.py base_loaddata

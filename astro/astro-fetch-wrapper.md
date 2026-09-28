@@ -1,6 +1,5 @@
 ---
 created: 2026-07-26
-updated: 2026-07-26
 tags:
   - astro
   - api
@@ -11,7 +10,7 @@ tags:
 type: resource
 status: active
 source: templates://astro/astro-fetch-wrapper.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 
@@ -263,7 +262,7 @@ PUBLIC_API_BASE_URL=https://api.example.com
 
 `PUBLIC_*` prefix makes it available in client-side code via `import.meta.env`.
 
-See [[astro-docker-deployment|Dockerized Deployment]] for how to pass build-time env vars in Docker.
+See [Dockerized Deployment](./astro-docker-deployment.md) for how to pass build-time env vars in Docker.
 
 ## 9. Key Rules
 
@@ -273,9 +272,9 @@ See [[astro-docker-deployment|Dockerized Deployment]] for how to pass build-time
 - Retry logic is in the client — component code doesn't need retry loops
 - Set reasonable timeouts (30s default) — infinite waits are the most common bug
 - Base URL from `import.meta.env.PUBLIC_*` — never hardcode
-- Requires Node 20+ / modern browsers (`AbortSignal.timeout` + `AbortSignal.any`)
+- Requires Node >=22 / modern browsers (`AbortSignal.timeout` + `AbortSignal.any`)
 
 ## 10. Connection to Other Patterns
 
-- Call API endpoints from Zustand store actions → see [[astro-zustand-zod]]
-- Environment variables for base URL → see [[astro-docker-deployment]]
+- Call API endpoints from Zustand store actions → see [astro-zustand-zod](./astro-zustand-zod.md)
+- Environment variables for base URL → see [astro-docker-deployment](./astro-docker-deployment.md)

@@ -1,6 +1,5 @@
 ---
 created: 2026-05-30
-updated: 2026-05-30
 tags:
   - django
   - redis
@@ -9,19 +8,19 @@ tags:
 type: resource
 status: active
 source: templates://django/django-redis.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 
 # Redis in Django Integration Guide (Optional)
 
-> Optional — adopt only for caching/background tasks. Env loader is `python-dotenv` (see [[django-project-setup|Project Setup]]); set `REDIS_URL` to the full URL including DB index.
+> Optional — adopt only for caching/background tasks. Env loader is `python-dotenv` (see [Project Setup](./django-project-setup.md)); set `REDIS_URL` to the full URL including DB index.
 
 This guide details how to implement Redis (external) in a Django project for caching and background tasks.
 
 ## 📦 Dependencies
 
-Add these to your `requirements.txt` (see [[django-project-setup|Django Project Setup]]):
+Add these to your `requirements.txt` (see [Django Project Setup](./django-project-setup.md)):
 
 ```text
 django-redis>=5.4.0
@@ -78,7 +77,7 @@ from celery import shared_task
 
 @shared_task
 def process_media_upload(file_id):
-    # Logic for processing files (see [[django-media-storage|Media Storage Configuration]])
+    # Logic for processing files (see [Media Storage Configuration](./django-media-storage.md))
     ...
 ```
 
@@ -103,5 +102,5 @@ def get_data():
 ---
 **Related:**
 - Redis (external)
-- [[django-project-setup|Django Project Setup]]
+- [Django Project Setup](./django-project-setup.md)
 - Coolify (external)

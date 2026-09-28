@@ -1,6 +1,5 @@
 ---
 created: 2026-08-11
-updated: 2026-08-11
 tags:
   - gsap
   - scrolltrigger
@@ -10,7 +9,7 @@ tags:
 type: resource
 status: active
 source: templates://astro/gsap-scrolltrigger/01-setup-and-mandatory-files.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 
@@ -112,10 +111,13 @@ tree-shakes subpath imports (`gsap/ScrollTrigger`). Never use `is:inline` for GS
   import { gsap, ScrollTrigger } from "@/lib/gsap"
 
   const initAnimations = () => {
-    // animations here
+    if (!document.querySelector(".js-my-section")) return // section-presence guard (V1)
+    // animations here (use mm.revert()/ctx.revert() cleanup per §5)
   }
 
-  document.addEventListener("astro:page-load", initAnimations)
+  initAnimations() // immediate init for first paint (V1)
+  document.addEventListener("astro:page-load", initAnimations) // re-init on VT nav
+  document.addEventListener("astro:after-swap", () => ScrollTrigger.refresh()) // cleanup/refresh (V1)
 </script>
 ```
 
@@ -324,7 +326,7 @@ and [03](./03-section-reveal-pattern.md#reducing-the-copy-paste).
 ## 7. Verify your setup
 
 1. `pnpm run dev`, open the page.
-2. In DevTools, import at the console: `const { gsap, ScrollTrigger } = await import("./node_modules/gsap/index.js")` → `ScrollTrigger` should be defined.
+2. In DevTools, import at the console: `const { gsap, ScrollTrigger } = await import("gsap")  # in browser console, or check window.gsap` → `ScrollTrigger` should be defined.
 3. Scroll — sections using the reveal pattern should animate in.
 4. DevTools → "Disable JavaScript" → all content should still be visible: approach A has no pre-hiding; approaches B/C rely on the `.no-js` override revealing `.js-reveal` elements.
 

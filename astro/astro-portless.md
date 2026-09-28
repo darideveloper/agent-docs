@@ -1,6 +1,5 @@
 ---
 created: 2026-07-27
-updated: 2026-09-17
 tags:
   - astro
   - development
@@ -9,7 +8,7 @@ tags:
 type: resource
 status: active
 source: templates://astro/astro-portless.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 
@@ -42,7 +41,7 @@ server: {
 ## Prerequisites
 
 ```bash
-npm install -g portless
+pnpm add -g portless  # or: pnpm dlx portless --help (never npm per repo rule)
 ```
 
 ## Setup per Project
@@ -102,7 +101,7 @@ Portless injects the following into the child process:
 
 ## Running under AI agents
 
-Astro ≥7.3 auto-backgrounds the dev server when it detects an agent environment (e.g. `OPENCODE` / `OPENCODE_PID` set): the `portless run` supervisor exits while the Astro child keeps the port, so the proxy route unregisters (proxy 404) while the direct port still answers. Default policy: servers are started manually — agents never autostart them.
+Astro 6 (astro dev runs in foreground; use portless run for branch-subdomain URLs) the dev server when it detects an agent environment (e.g. `OPENCODE` / `OPENCODE_PID` set): the `portless run` supervisor exits while the Astro child keeps the port, so the proxy route unregisters (proxy 404) while the direct port still answers. Default policy: servers are started manually — agents never autostart them.
 
 Fix pattern — stop the orphan, relaunch foreground with agent vars stripped, kept under supervision in a persistent/detached session:
 
@@ -120,7 +119,7 @@ the [AGENTS worktrees snippet](./astro-agents-worktrees-snippet.md).
 
 | Issue | Fix |
 |---|---|
-| `command not found: portless` | Run `npm install -g portless` |
+| `command not found: portless` | Run `pnpm add -g portless  # or: pnpm dlx portless --help (never npm per repo rule)` |
 | `.localhost` doesn't resolve (Safari, Firefox) | Run `portless hosts sync` to add entries to `/etc/hosts` |
 | Port conflict on 443 | Portless falls back to 1355; check `portless status` |
 | Dev server won't start | Ensure no other process is on the assigned port; stop that checkout's server (Ctrl+C) then retry |
@@ -135,6 +134,6 @@ the [AGENTS worktrees snippet](./astro-agents-worktrees-snippet.md).
 
 ## Connection to Other Patterns
 
-- `SITE_URL` env var is consumed by the app for form redirects and canonical links → see [[astro-site-config]]
+- `SITE_URL` env var is consumed by the app for form redirects and canonical links → see [astro-site-config](./astro-site-config.md)
 - Worktrees (one checkout per branch, branch-subdomain URLs) → see [Git Worktrees + Portless](./astro-worktrees.md)
-- In production, the app is served via Docker/nginx, not portless → see [[astro-docker-deployment]]
+- In production, the app is served via Docker/nginx, not portless → see [astro-docker-deployment](./astro-docker-deployment.md)

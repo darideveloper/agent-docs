@@ -1,6 +1,5 @@
 ---
 created: 2026-08-11
-updated: 2026-08-11
 tags:
   - gsap
   - scrolltrigger
@@ -11,7 +10,7 @@ tags:
 type: resource
 status: active
 source: templates://astro/gsap-scrolltrigger/02-loader-and-entrance-orchestration.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 

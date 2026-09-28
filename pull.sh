@@ -7,7 +7,11 @@ set -euo pipefail
 #   ./pull.sh --check                  # report states
 #   ./pull.sh --stack astro --layers i18n,react-islands --yes --dest ./docs
 #
-# Requires: bash, jq (or python3 fallback), git + npx degit (fallback: curl per-file if no Node)
+# Requires: bash 4+, python3, git + npx degit (fallback: curl per-file if no Node)
+if [[ "${BASH_VERSINFO[0]:-0}" -lt 4 ]]; then
+  echo "pull.sh requires bash 4+ (associative arrays, mapfile). On macOS: brew install bash." >&2
+  exit 1
+fi
 
 REPO="darideveloper/agent-docs"
 BRANCH="main"
@@ -41,40 +45,25 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# helpers: use python3 if jq missing
-json_get() {
-  local query="$1"
-  local file="$2"
-  if command -v jq >/dev/null 2>&1; then
-    jq -r "$query" "$file"
-  else
-    python3 -c "
-import json,sys
-data=json.load(open(sys.argv[1]))
-# minimal helpers for our queries — fallback to python
-print('jq missing: install jq for richer output')
-" "$file" >/dev/null
-    # for manifest parsing we use python directly elsewhere
-    echo ""
-  fi
-}
+# NOTE: manifest parsing uses python3 helpers below (py_list_*). No jq needed.
 
-# --check mode: compare local headers vs manifest freshness (best-effort without network)
+# --check mode: header dump only (no upstream comparison).
+# For UP-TO-DATE/DIVERGED/NEW states use promote.sh --check.
 if [[ "$CHECK" == "true" ]]; then
   echo "check: scanning ${DEST} headers..."
-  if [[ ! -d "$DEST" ]]; then echo "BEHIND: $DEST does not exist"; exit 0; fi
+  if [[ ! -d "$DEST" ]]; then echo "MISSING: $DEST does not exist (re-pull to create)"; exit 0; fi
   # List vendor files (exclude *.local.md)
   found=0
   while IFS= read -r -d '' f; do
     [[ "$f" == *".local.md" ]] && continue
     [[ "$f" == *"/INDEX.md" ]] && continue
     found=1
-    ver=$(grep -m1 "^version:" "$f" 2>/dev/null | sed 's/version:\s*//' || echo "unknown")
-    src=$(grep -m1 "^source:" "$f" 2>/dev/null | sed 's/source:\s*//' || echo "unknown")
+    ver=$(grep -m1 "^version:" "$f" 2>/dev/null | sed 's/version: *//' || echo "unknown")
+    src=$(grep -m1 "^source:" "$f" 2>/dev/null | sed 's/source: *//' || echo "unknown")
     echo "  $f  source=$src  version=$ver"
-  done < <(find "$DEST" -maxdepth 2 -type f -name "*.md" -print0 2>/dev/null; find "$DEST" -maxdepth 3 -type f -path "*/gsap-scrolltrigger/*.md" -print0 2>/dev/null)
+  done < <((find "$DEST" -maxdepth 2 -type f -name "*.md" -print0 2>/dev/null; find "$DEST" -maxdepth 3 -type f -path "*/gsap-scrolltrigger/*.md" -print0 2>/dev/null) | sort -zu)
   [[ $found -eq 0 ]] && echo "  (no vendored *.md found)"
-  echo "check done. Use pull.sh without --check to update."
+  echo "check done. States: see promote.sh --check for UP-TO-DATE/DIVERGED/NEW. Pull always overwrites *.md, never *.local.md."
   exit 0
 fi
 
@@ -177,8 +166,8 @@ if [[ -n "$LAYERS" ]]; then
   fi
 fi
 
-# Interactive layer toggle if not pre-selected with --yes
-if [[ -z "$LAYERS" || "$YES" != "true" ]]; then
+# Interactive layer toggle: skipped when --yes (non-interactive, base + --layers only).
+if [[ "$YES" != "true" ]]; then
   if [[ ${#layer_entries[@]} -gt 0 && ( -z "$LAYERS" || "$YES" != "true" ) ]]; then
     # Build indexed array of layer names
     layer_names=()
@@ -259,28 +248,12 @@ fi
 
 mkdir -p "$DEST"
 
-# Copy helper
+# Copy helper — keeps upstream source:/version: untouched (single truth).
 copy_with_header() {
   local src="$1"
   local dst="$2"
   mkdir -p "$(dirname "$dst")"
-  # Copy content; stamp source/version if needed
-  # source/version already stamped in repo files, but update version to date+hash
   cp "$src" "$dst"
-  # Update version line to date+hash if git available in source
-  local datestr
-  datestr=$(date +%Y-%m-%d)
-  local hash="unreleased"
-  if git -C "$SCRIPT_DIR" rev-parse --short HEAD >/dev/null 2>&1; then
-    hash=$(git -C "$SCRIPT_DIR" rev-parse --short HEAD)
-  elif git -C "$TMPDIR/agent-docs" rev-parse --short HEAD >/dev/null 2>&1; then
-    hash=$(git -C "$TMPDIR/agent-docs" rev-parse --short HEAD 2>/dev/null || echo "unreleased")
-  fi
-  # Replace version line
-  if grep -q "^version:" "$dst"; then
-    # preserve source line, update version
-    sed -i "s/^version:.*/version: ${datestr}+${hash}/" "$dst"
-  fi
 }
 
 if [[ "$fetched" == "true" && -d "$TMPDIR/agent-docs" ]]; then
@@ -353,17 +326,15 @@ EOF
   fi
 done
 
-# Write INDEX.md if not exists or update placeholder
-if [[ ! -f "$DEST/INDEX.md" ]]; then
-  if [[ -f "$SCRIPT_DIR/INDEX-template.md" ]]; then
-    cp "$SCRIPT_DIR/INDEX-template.md" "$DEST/INDEX.md"
-  elif [[ -f "$TMPDIR/agent-docs/INDEX-template.md" ]]; then
-    cp "$TMPDIR/agent-docs/INDEX-template.md" "$DEST/INDEX.md"
-  else
-    echo "# docs/INDEX" > "$DEST/INDEX.md"
-  fi
-  echo "  wrote $DEST/INDEX.md"
+# Write/refresh INDEX.md from template on every pull (vendored contract).
+if [[ -f "$SCRIPT_DIR/INDEX-template.md" ]]; then
+  cp "$SCRIPT_DIR/INDEX-template.md" "$DEST/INDEX.md"
+elif [[ -f "$TMPDIR/agent-docs/INDEX-template.md" ]]; then
+  cp "$TMPDIR/agent-docs/INDEX-template.md" "$DEST/INDEX.md"
+else
+  echo "# docs/INDEX" > "$DEST/INDEX.md"
 fi
+echo "  wrote $DEST/INDEX.md"
 
 echo ""
 echo "Done. Files in $DEST:"

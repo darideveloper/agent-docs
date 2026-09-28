@@ -1,6 +1,5 @@
 ---
 created: 2026-08-09
-updated: 2026-08-09
 tags:
   - django
   - admin
@@ -11,13 +10,13 @@ tags:
 type: resource
 status: active
 source: templates://django/django-i18n-es-admin.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 
 # Spanish Django Admin — OPT-IN Variant
 
-> OPT-IN Spanish variant — skip for English-default projects. English default is `LANGUAGE_CODE = "en-us"` + `TIME_ZONE = "America/Mexico_City"` (see [[django-project-setup|Project Setup]]). This recipe sets `LANGUAGE_CODE = "es"` (replace `TIME_ZONE` with your zone).
+> OPT-IN Spanish variant — skip for English-default projects. English default is `LANGUAGE_CODE = "en-us"` + `TIME_ZONE = "America/Mexico_City"` (see [Project Setup](./django-project-setup.md)). This recipe sets `LANGUAGE_CODE = "es"` (replace `TIME_ZONE` with your zone).
 
 > Scope **admin only**: nothing here touches public web pages. The public-site
 > translation differs; this note only covers the Django Admin.
@@ -53,7 +52,7 @@ everything else (B–D).
 
 ## 2. Step 0 — global settings (the ONLY mandatory change)
 
-`config/settings.py` (your project's settings module):
+`project/settings.py` (your project's settings module):
 
 ```python
 LANGUAGE_CODE = "es"
@@ -251,7 +250,7 @@ via `__str__`, so overriding it is what makes the **admin UI** — not just the
 model — show `"Pintura"` / `"Óleo"` instead of raw slugs.
 
 > The **language-neutral rule** for these texts (English by default, Spanish when
-> this recipe is adopted) lives in [[django-model-definitions|Model Definitions]];
+> this recipe is adopted) lives in [Model Definitions](./django-model-definitions.md);
 > this section is its Spanish-literal variant.
 
 ---
@@ -520,7 +519,7 @@ Extend the `texts` array with additional `[name]`→placeholder pairs as needed.
 
 ## See also
 
-- [[django-unfold-admin|Unfold Admin Theme]] — django-unfold setup that this
+- [Unfold Admin Theme](./django-unfold-admin.md) — django-unfold setup that this
   admin-translation system builds on.
-- [[django-project-setup|Project Setup Guide]] — project scaffolding where these
+- [Project Setup Guide](./django-project-setup.md) — project scaffolding where these
   settings live.

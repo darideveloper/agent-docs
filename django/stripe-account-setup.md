@@ -1,6 +1,5 @@
 ---
 created: 2026-08-26
-updated: 2026-08-26
 tags:
   - stripe
   - subscriptions
@@ -9,7 +8,7 @@ tags:
 type: guide
 status: active
 source: templates://django/stripe-account-setup.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 
@@ -60,7 +59,7 @@ your account's real values.
   `STRIPE_SECRET_KEY`, `STRIPE_PUBLISHABLE_KEY`, `STRIPE_WEBHOOK_SECRET`,
   `STRIPE_API_VERSION` and `STRIPE_PRICE_ID` entries; `.env.dev` populated
   with the test keys + price ID + webhook secret.
-- `docs/stripe-subscriptions.md`, `docs/testing-stripe.md` — updated to
+- `./stripe-subscriptions.md`, `./testing-stripe.md` — updated to
   document `STRIPE_PRICE_ID`.
 
 ### Verification
@@ -73,7 +72,7 @@ your account's real values.
 
 ## Pending changes (test mode)
 
-1. **Run the local end-to-end flow** (docs/testing-stripe.md §3):
+1. **Run the local end-to-end flow** (./testing-stripe.md §3):
    - Start the dev server and, in another terminal:
      `stripe listen --forward-to http://localhost:8000/webhooks/stripe/ --api-key <sk_test_...>`
    - Create a `<MODEL>` (e.g. `Artist`) with a real email in the admin.

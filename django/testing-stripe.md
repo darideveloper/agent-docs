@@ -1,6 +1,5 @@
 ---
 created: 2026-08-20
-updated: 2026-09-04
 tags:
   - stripe
   - subscriptions
@@ -9,7 +8,7 @@ tags:
 type: guide
 status: active
 source: templates://django/testing-stripe.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 
@@ -31,9 +30,9 @@ test (dev) environment first, then how to validate the same flow in live
   `STRIPE_WEBHOOK_SECRET` and `STRIPE_PRICE_ID` populated with **test-mode**
   values.
 - The dashboard running locally (`python manage.py runserver`, port 8000).
-- Tests run via `python manage.py test` per [[django-testing-contract|Testing Contract (Django-only Runner)]] — do not use `pytest`.
+- Tests run via `python manage.py test` per [Testing Contract (Django-only Runner)](./django-testing-contract.md) — do not use `pytest`.
 
-> **Testing runner:** This project uses the Django-only contract ([[django-testing-contract|Testing Contract (Django-only Runner)]]). If you add subscription tests, use `django.test.TestCase` / `rest_framework.test.APITestCase` and `venv/bin/python manage.py test <APP_LABEL>.tests --verbosity=2`.
+> **Testing runner:** This project uses the Django-only contract ([Testing Contract (Django-only Runner)](./django-testing-contract.md)). If you add subscription tests, use `django.test.TestCase` / `rest_framework.test.APITestCase` and `venv/bin/python manage.py test <APP_LABEL>.tests --verbosity=2`.
 
 ## 1. Stripe Dashboard product setup
 

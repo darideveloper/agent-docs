@@ -1,6 +1,5 @@
 ---
 created: 2026-08-30
-updated: 2026-08-30
 tags:
   - django
   - dev-ops
@@ -10,13 +9,13 @@ tags:
 type: resource
 status: active
 source: templates://django/django-cloudflare-tunnel.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 
 # Django + Cloudflare Tunnel (Development Only, Optional)
 
-Expose your local Django development server to the internet through a secure Cloudflare Tunnel — no port forwarding, no firewall changes, no public IP. This guide is for **development workflows only** and is designed to coexist with the [[django-local-subdomain-setup|portless-based local development setup]].
+Expose your local Django development server to the internet through a secure Cloudflare Tunnel — no port forwarding, no firewall changes, no public IP. This guide is for **development workflows only** and is designed to coexist with the [portless-based local development setup](./django-local-subdomain-setup.md).
 
 ## 🚀 Overview
 
@@ -32,7 +31,7 @@ Cloudflare Tunnel uses the `cloudflared` daemon to establish an outbound-only co
 
 **Scope:** This document covers **temporary quick tunnels** only. For named/persistent tunnels with custom subdomains, see the [Cloudflare Tunnel documentation](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/).
 
-**Prerequisite:** You should already have a working Django project following the [[django-project-setup|Project Setup Guide]] conventions (env-driven settings, `python-dotenv`, `ALLOWED_HOSTS`/`CSRF_TRUSTED_ORIGINS` from env). For the local subdomain part, this guide assumes [[django-local-subdomain-setup|portless]] is already configured.
+**Prerequisite:** You should already have a working Django project following the [Project Setup Guide](./django-project-setup.md) conventions (env-driven settings, `python-dotenv`, `ALLOWED_HOSTS`/`CSRF_TRUSTED_ORIGINS` from env). For the local subdomain part, this guide assumes [portless](./django-local-subdomain-setup.md) is already configured.
 
 ---
 
@@ -163,7 +162,7 @@ USE_X_FORWARDED_HOST = os.getenv("USE_X_FORWARDED_HOST") == "True"
 
 ## 📋 Step 4: Environment Variables
 
-Add the following lines to your existing `.env.dev` (the file the project loads when `ENV=dev` — keep `.env` containing only `ENV=dev` per the [[django-project-setup]] convention). These are **additions**, not replacements.
+Add the following lines to your existing `.env.dev` (the file the project loads when `ENV=dev` — keep `.env` containing only `ENV=dev` per the [django-project-setup](./django-project-setup.md) convention). These are **additions**, not replacements.
 
 ```env
 # Cloudflare Tunnel (dev only — leave False when working on localhost)
@@ -200,7 +199,7 @@ You can run the tunnel in three different configurations depending on what your 
 | Tools | `portless` |
 | Best for | Daily development, OAuth, cookie/session testing |
 
-This is the default in the [[django-local-subdomain-setup|Local Development & Subdomain Setup]] guide. No internet exposure needed.
+This is the default in the [Local Development & Subdomain Setup](./django-local-subdomain-setup.md) guide. No internet exposure needed.
 
 ### Mode B — Cloudflare Tunnel only (internet exposure)
 
@@ -248,7 +247,7 @@ Both URLs serve the same Django process. The only thing to remember: the tunnel 
 
 ## 📜 Step 6: `dev.sh` Integration
 
-Add the tunnel to your existing `dev.sh` (from [[django-local-subdomain-setup]]) as an opt-in background process. The snippet below is the **complete base template** (port detection, venv, portless, tmux) plus the **tunnel addition** at the end. Copy the whole block as your starting point.
+Add the tunnel to your existing `dev.sh` (from [django-local-subdomain-setup](./django-local-subdomain-setup.md)) as an opt-in background process. The snippet below is the **complete base template** (port detection, venv, portless, tmux) plus the **tunnel addition** at the end. Copy the whole block as your starting point.
 
 ```bash
 #!/bin/bash

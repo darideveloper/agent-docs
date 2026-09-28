@@ -1,6 +1,5 @@
 ---
 created: 2026-04-18
-updated: 2026-08-29
 tags:
   - django
   - admin
@@ -8,7 +7,7 @@ tags:
 type: resource
 status: active
 source: templates://django/django-image-copy-link.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 

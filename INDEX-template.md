@@ -10,16 +10,16 @@
 ## Rules for Agents & Humans
 - **Generic fixes go in `X.md` ONLY on explicit user request:** typos, better patterns, reusable features — and only when the user asked for it. Agents never auto-edit `X.md` unasked. `promote.sh` diffs it, blocks secrets, and emits the PR artifact.
 - **Project content goes to `*.local.md`:** project-specific slugs, business keys, language lists, client conventions, etc. Never promoted.
-- **Never commit secrets:** no API keys, tokens, passwords, or private URLs in `docs/` (vendor or local). Secrets belong in `.env*` (gitignored). If a doc needs an example key, use a placeholder (`sk_test_placeholder`, `SECRET_KEY=change-me`).
-- **Re-pull safety:** `pull.sh --update` overwrites `*.md` but never touches `*.local.md`.
+- **Never commit secrets:** no API keys, tokens, passwords, or private URLs in `docs/` (vendor or local). Secrets belong in `.env*` (gitignored). If a doc needs an example key, use a placeholder (`sk_test_placeholder`, `sk_live_placeholder`, `SECRET_KEY=change-me`).
+- **Re-pull safety:** `pull.sh` always overwrites `*.md` but never touches `*.local.md`.
 
 ## Pull / Promote
 ```bash
-# pull correct docs interactively (bash select TUI, needs Node for degit; curl fallback if missing)
-curl -sL https://raw.githubusercontent.com/darideveloper/agent-docs/main/pull.sh | bash
+# pull correct docs interactively (bash 4+ select TUI, needs Node/npx for degit; curl fallback if missing)
+curl -sL https://raw.githubusercontent.com/darideveloper/agent-docs/main/pull.sh | bash -s -- --stack astro --layers <yours> --yes --dest ./docs
 # or locally if you have the repo:
 ./pull.sh                 # TUI: pick stack → toggle layers → preview → copy
-./pull.sh --check         # report UP-TO-DATE / BEHIND / DIVERGED
+./pull.sh --check         # header dump (source=/version= per file)
 ./pull.sh --stack astro --layers i18n,react-islands --yes  # non-interactive (for agents/CI)
 
 # propose generic improvements upstream (updates + brand-new files; *.local.md never promoted)

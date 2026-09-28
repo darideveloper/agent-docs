@@ -1,6 +1,5 @@
 ---
 created: 2026-09-09
-updated: 2026-09-27
 tags:
   - astro
   - configuration
@@ -8,7 +7,7 @@ tags:
 type: resource
 status: active
 source: templates://astro/astro-base-config.md
-version: 2026-09-27+0ecb7bf
+version: 2026-09-27+57b0fd3
 
 ---
 
@@ -93,7 +92,7 @@ With i18n, import `routes` with a **relative** path (config runs under Node, `@/
 
 ```json
 {
-  "packageManager": "pnpm@latest",
+  "packageManager": "pnpm@x.y.z"  # e.g. pnpm@10.0.0, never @latest (corepack needs exact semver),
   "engines": { "node": ">=22" },
   "scripts": {
     "dev": "portless run pnpm astro dev",
@@ -240,7 +239,7 @@ dirs) go below, clearly marked.
 ```bash
 SITE_URL=https://<project>.localhost
 # Only if the project has a backend contract — omit otherwise:
-# API_BASE_URL=https://<backend>.localhost
+# PUBLIC_API_BASE_URL=https://<backend>.localhost
 # API_TOKEN=<paste-token-here>
 ```
 
@@ -259,9 +258,29 @@ src/pages/
 
 PWA `workbox.navigateFallback: '/offline/'` and nginx `error_page 404 /offline/index.html` are two faces of the same fallback — keep both only with the PWA layer; Base nginx has no offline `error_page`.
 
-## 6. Verification matrix (all layers)
+## 6. Canonical `Layout.astro` composition (all layers)
 
-- [ ] Base: `pnpm build` clean, 404 page, robots.txt + sitemap, no `[[wikilink]]` leftovers
+```astro
+---
+// src/layouts/Layout.astro — compose in this order:
+import { ClientRouter } from 'astro:transitions' // Base, default ON
+// <slot name="seo" /> from ./astro-seo.md §0 + markdown §1.3
+// PWA meta from ./astro-pwa.md §5 (only with PWA layer)
+// preloadImage imagesrcset from ./astro-images.md §5 + ./astro-seo.md §7.3
+// global.css import from ./astro-react-islands.md §3
+// Loader from gsap 02 §3 (only with GSAP layer) + no-js swap from gsap 01 §4B
+---
+<html>
+  <head><ClientRouter /><slot name="seo" /></head>
+  <body><slot /></body>
+</html>
+```
+
+Head order, LCP preload, and VT bugs come from deviating — see [Transitions](./astro-client-side-page-transitions.md) V1 for lifecycle.
+
+## 7. Verification matrix (all layers)
+
+- [ ] Base: `pnpm build` clean, 404 page, robots.txt + sitemap, no `[wikilink](./wikilink.md)` leftovers
 - [ ] Router ON: nav without reload, back/forward, hash anchors, embeds, analytics on `astro:page-load`
 - [ ] i18n (if present): `pnpm validate-i18n`, lang switch on unknown URLs stays put
 - [ ] Markdown (if present): `pnpm validate-markdown` post-build, no `<Markdown>` inside `<p>`

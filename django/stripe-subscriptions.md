@@ -1,6 +1,5 @@
 ---
 created: 2026-08-20
-updated: 2026-08-29
 tags:
   - stripe
   - subscriptions
@@ -9,7 +8,7 @@ tags:
 type: resource
 status: active
 source: templates://django/stripe-subscriptions.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 
@@ -209,7 +208,7 @@ data rewrite of existing subscriptions.
 ## Testing
 
 ### Prerequisites
-1. Install Stripe CLI and login: `stripe login` (full flow canonical in [[testing-stripe|Testing Stripe]] — summary only here)
+1. Install Stripe CLI and login: `stripe login` (full flow canonical in [Testing Stripe](./testing-stripe.md) — summary only here)
 2. Configure `.env.dev` with test-mode keys:
    - `STRIPE_SECRET_KEY` (test `sk_test_...`)
    - `STRIPE_PUBLISHABLE_KEY` (test `pk_test_...`)

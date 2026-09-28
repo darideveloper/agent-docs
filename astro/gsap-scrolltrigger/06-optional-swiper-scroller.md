@@ -1,6 +1,5 @@
 ---
 created: 2026-08-11
-updated: 2026-08-11
 tags:
   - gsap
   - scrolltrigger
@@ -11,7 +10,7 @@ tags:
 type: resource
 status: active
 source: templates://astro/gsap-scrolltrigger/06-optional-swiper-scroller.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 
@@ -218,3 +217,6 @@ bars, accented color on active).
 ---
 
 Back to [README.md](./README.md).
+
+
+> V1 lifecycle ([Transitions](../astro-client-side-page-transitions.md) §5): section-presence guard + immediate init() + astro:page-load re-init + astro:after-swap cleanup + ScrollTrigger.refresh(). Do not call init once without listeners when <ClientRouter /> is ON.

@@ -1,6 +1,5 @@
 ---
 created: 2026-07-26
-updated: 2026-08-05
 tags:
   - astro
   - zustand
@@ -11,7 +10,7 @@ tags:
 type: resource
 status: active
 source: templates://astro/astro-zustand-zod.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 
@@ -23,7 +22,7 @@ Zustand is the **primary state sharing layer** for all React islands in the proj
 
 > **⚠️ READER / AI AGENT — two component approaches.** This doc describes the **store** (shared
 > everywhere). The **components** that read it come in two mutually exclusive forms — see
-> [[astro-atomic-components]]:
+> [astro-atomic-components](./astro-atomic-components.md):
 > 1. **Vanilla self-bound atoms** (this project): `Input` binds `useField()` directly; the hook is
 >    injectable via props. This is the default here — `src/components/atoms/Input.tsx`.
 > 2. **UI-library wrapper atoms** (`ui/` projects): a presentation re-export + a `Validated*` atom
@@ -365,6 +364,6 @@ Define separate stores for separate concerns:
 
 ## 9. Connection to Other Patterns
 
-- Store-bound atoms use `useField()` by default → see [[astro-atomic-components]]
-- Fetch data in store actions using `safeFetch` → see [[astro-fetch-wrapper]]
-- Astro pages host React islands that read from this store → see [[astro-react-islands]]
+- Store-bound atoms use `useField()` by default → see [astro-atomic-components](./astro-atomic-components.md)
+- Fetch data in store actions using `safeFetch` → see [astro-fetch-wrapper](./astro-fetch-wrapper.md)
+- Astro pages host React islands that read from this store → see [astro-react-islands](./astro-react-islands.md)

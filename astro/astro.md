@@ -1,6 +1,5 @@
 ---
 created: 2026-04-21
-updated: 2026-09-17
 tags:
   - astro
   - frontend
@@ -8,7 +7,7 @@ tags:
 type: area-note
 status: active
 source: templates://astro/astro.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 
@@ -46,4 +45,4 @@ Astro is a modern web framework designed for speed, focusing on content-driven w
 Limited combos that work: i18n without API (skip Fetch + PWA API-cache), Markdown without i18n (§2+§4 only), static no-React (Base + Transitions still on).
 
 ### **Other Resources**
-*   [[mermaid-diagram-generation|Mermaid Diagram Generation]]
+Mermaid Diagram Generation — see https://github.com/darideveloper/agent-docs (vault pointer, no vendored doc).

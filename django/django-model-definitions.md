@@ -1,6 +1,5 @@
 ---
 created: 2026-08-10
-updated: 2026-08-10
 tags:
   - django
   - models
@@ -10,19 +9,19 @@ tags:
 type: resource
 status: active
 source: templates://django/django-model-definitions.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 
 # Django Model Definitions — Admin-Visible Texts (English Default)
 
-> English by default. For the Spanish-literal variant see [[django-i18n-es-admin|Spanish Django Admin]] opt-in.
+> English by default. For the Spanish-literal variant see [Spanish Django Admin](./django-i18n-es-admin.md) opt-in.
 
 > Scope **models only**: this note covers the strings that live on the model and
 > show up in the Django Admin — field labels, help text, model names, and the
 > `__str__` used by dropdowns, M2M widgets and inline rows. Admin-layer strings
-> (fieldsets, columns, custom views) are covered by [[django-unfold-admin|Unfold
-> Admin Theme]] and the admin guides.
+> (fieldsets, columns, custom views) are covered by [Unfold
+> Admin Theme](./django-unfold-admin.md) and the admin guides.
 
 This guide is a portable recipe to define the admin-visible text of **every
 model** of **any Django project**. Replicate it as-is: the same rules apply no
@@ -32,7 +31,7 @@ matter the domain.
 
 **English by default.** Write `verbose_name`, `help_text`, `Meta.verbose_name`
 and `__str__` content in English unless the project follows the Spanish admin
-recipe ([[django-i18n-es-admin|Spanish Django Admin]]) — in that case write the
+recipe ([Spanish Django Admin](./django-i18n-es-admin.md)) — in that case write the
 literals in Spanish instead. Nothing else changes; the shape of the code is
 identical.
 
@@ -201,9 +200,9 @@ class BookTranslation(models.Model):
 
 ## See also
 
-- [[django-i18n-es-admin|Spanish Django Admin]] — the Spanish-literal variant of
+- [Spanish Django Admin](./django-i18n-es-admin.md) — the Spanish-literal variant of
   this rule (`LANGUAGE_CODE = "es"` + Spanish `verbose_name`/`help_text`/`__str__`).
-- [[django-fixtures|Fixed Data Loading with Django Fixtures]] — reference data
+- [Fixed Data Loading with Django Fixtures](./django-fixtures.md) — reference data
   for models defined under these rules.
-- [[django-unfold-admin|Unfold Admin Theme]] — admin-layer strings that build on
+- [Unfold Admin Theme](./django-unfold-admin.md) — admin-layer strings that build on
   the model texts.

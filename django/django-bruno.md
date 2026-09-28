@@ -1,6 +1,5 @@
 ---
 created: 2026-08-12
-updated: 2026-08-12
 tags:
   - bruno
   - api-client
@@ -9,7 +8,7 @@ tags:
 type: resource
 status: active
 source: templates://django/django-bruno.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 
@@ -24,7 +23,7 @@ Bruno is chosen over Postman because it is open-source and stores collections as
 ## 1. Prerequisites
 
 - **Bruno desktop** (3.0+) installed — downloads at [usebruno.com](https://www.usebruno.com/downloads). Workspaces are only available in 3.0.0 and higher.
-- A dev server reachable over the local network. In this repo that is the portless subdomain `https://<project-dir-name>.localhost` started by `./dev.sh` — see [[django-local-subdomain-setup|Local Development & Subdomain Setup]].
+- A dev server reachable over the local network. In this repo that is the portless subdomain `https://<project-dir-name>.localhost` started by `./dev.sh` — see [Local Development & Subdomain Setup](./django-local-subdomain-setup.md).
 - Fallback URL: `http://localhost:8000` only works when port 8000 is free (`dev.sh` auto-increments to the next free port on conflict).
 
 ---
@@ -97,7 +96,7 @@ vars {
   @description('''Base URL of the local dev server, reachable via the portless subdomain started by ./dev.sh. Fallback: http://localhost:8000 (only usable when port 8000 is free).''')
   base_url: https://<project-dir-name>.localhost
 
-  @description('''DRF Token placeholder. Mint a real token from the Django shell (see [[django-drf|DRF Implementation Guide]] §6) and paste it here. Never commit a real token.''')
+  @description('''DRF Token placeholder. Mint a real token from the Django shell (see [DRF Implementation Guide](./django-drf.md) §6) and paste it here. Never commit a real token.''')
   token: <paste-token-here>
 }
 ```
@@ -264,7 +263,7 @@ If the request fails with a *connection error* while the proxy is down, that is 
 
 ## 10. Minting a DRF Token
 
-DRF exposes no login endpoint (see [[django-drf|DRF Implementation Guide]] §6 for the full context). Tokens are created manually in the Django shell:
+DRF exposes no login endpoint (see [DRF Implementation Guide](./django-drf.md) §6 for the full context). Tokens are created manually in the Django shell:
 
 ```sh
 python manage.py shell

@@ -1,6 +1,5 @@
 ---
 created: 2026-04-18
-updated: 2026-04-18
 tags:
   - django
   - storage
@@ -10,13 +9,13 @@ tags:
 type: resource
 status: active
 source: templates://django/django-media-storage.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 
 # Media File Storage Integration Guide (AWS S3 & DigitalOcean Spaces) — Optional
 
-> Optional — adopt only if the project needs S3-compatible storage. Canonical `STORAGES` block (including `IS_TESTING` fallback, see [[django-testing-contract]] §2.2). [[django-project-setup|Project Setup]] links here instead of duplicating.
+> Optional — adopt only if the project needs S3-compatible storage. CANONICAL `STORAGES` + `IS_TESTING` block lives here. [Project Setup](./django-project-setup.md) and [Testing Contract](./django-testing-contract.md) link here instead of duplicating — do not copy their snippets as canonical.
 
 This document provides a detailed breakdown of how to integrate and configure cloud storage for media and static files in a Django project, using **AWS S3** or **DigitalOcean Spaces**.
 
@@ -135,7 +134,7 @@ if STORAGE_AWS:
     AWS_DEFAULT_ACL = None
 else:
     # Fallback to local storage for development — IS_TESTING avoids Whitenoise manifest during `manage.py test`
-    # (see [[django-testing-contract]] §2.2; both Path/os.path variants there).
+    # (see [django-testing-contract](./django-testing-contract.md) §2.2; both Path/os.path variants there).
     import sys
     IS_TESTING = len(sys.argv) > 1 and sys.argv[1] == "test"
     staticfiles_backend = "django.contrib.staticfiles.storage.StaticFilesStorage" if IS_TESTING else "whitenoise.storage.CompressedManifestStaticFilesStorage"
@@ -202,7 +201,7 @@ ENV AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
 
 ## 🔄 Replicating in Another Project
 
-To replicate this setup in a new Django project (see [[django-project-setup]]):
+To replicate this setup in a new Django project (see [django-project-setup](./django-project-setup.md)):
 
 1.  **Install dependencies**: `pip install django-storages boto3`.
 2.  **Create `storage_backends.py`**: Copy the class definitions provided above into your project's main module.

@@ -1,6 +1,5 @@
 ---
 created: 2026-07-26
-updated: 2026-08-05
 tags:
   - astro
   - react
@@ -10,7 +9,7 @@ tags:
 type: resource
 status: active
 source: templates://astro/astro-react-islands.md
-version: 2026-09-17+4cf710f
+version: 2026-09-27+57b0fd3
 
 ---
 
@@ -24,7 +23,7 @@ Astro's island architecture lets you use React for interactive widgets while kee
 > (e.g. `Input` binds the Zustand store directly). If you scaffold a new project that uses a
 > **UI library** (shadcn, Radix), the island example would instead hydrate a `Validated*` wrapper
 > atom. The two approaches are mutually exclusive — pick one per project, and ask the user if unsure
-> (see [[astro-atomic-components]]).
+> (see [astro-atomic-components](./astro-atomic-components.md)).
 
 ## How It Works
 
@@ -153,8 +152,8 @@ pnpm add @astrojs/react @tailwindcss/vite react react-dom tailwindcss tw-animate
 pnpm add -D @types/react @types/react-dom
 
 # Install shadcn (optional, for UI primitives)
-pnpm add shadcn@latest
-pnpx shadcn init
+pnpm dlx shadcn@latest init  # do NOT pnpm add shadcn (CLI only)
+pnpm dlx shadcn@latest init
 ```
 
 Then configure `astro.config.mjs` as shown in section 2, add `global.css` as shown in section 3, and create your `tsconfig.json` with path aliases (canonical alias + merged config: see [astro-base-config](./astro-base-config.md) §1–§2):
@@ -213,6 +212,6 @@ React treats the Astro components as pre-rendered HTML — no extra JS cost.
 ## 9. Key Constraints
 
 - React islands hydrate independently — they don't share React context across islands
-- For cross-island state, use Zustand (see [[astro-zustand-zod]])
+- For cross-island state, use Zustand (see [astro-zustand-zod](./astro-zustand-zod.md))
 - Astro renders all React islands on the server too (SSR), except `client:only`
 - Keep each island focused on one interactive unit — don't wrap entire pages in React
