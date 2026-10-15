@@ -7,7 +7,7 @@ tags:
 type: resource
 status: active
 source: templates://django/django-project-setup.md
-version: 2026-09-27+57b0fd3
+version: 2026-10-15+d5ebea3
 
 ---
 
@@ -224,6 +224,68 @@ AWS_S3_ENDPOINT_URL=
 AWS_S3_CUSTOM_DOMAIN=
 
 ```
+
+### 5b. Env lifecycle rule (atomic — no drift, no leaks)
+
+Any add / rename / delete of `os.getenv("X")` / `os.environ.get("X")` / `os.environ["X"]` in `project/settings.py` MUST update `.env.dev.example` + `.env.prod.example` in the same change. Delete removes the key from both `.example`s. Rename = add + delete. Literals only — dynamic `os.getenv(name)` is banned.
+
+`.example` derivation: copy the key structure from `.env.dev` / `.env.prod`, replace every value with empty or placeholder (`SECRET_KEY=change-me-min-30-random-chars`, URLs `https://<...>.localhost`, tokens `sk_test_placeholder`). Never copy a real credential. Strict parity: every `settings.py` key MUST exist in both `.example`s (empty if unused in that env — e.g. copy the full AWS block into `.env.dev.example` with empty values when `STORAGE_AWS=False`). Commented `# OPTIONAL` blocks stay commented in `.example` until the guide is adopted (uncommenting = adoption, then the key becomes required in both files). Denylist (fail): `sk_live_`, `AKIA`, `BEGIN PRIVATE`; allowlist: `change-me`, `placeholder`, `<...>`, empty. Verify: `grep -R "sk_live_\|AKIA\|BEGIN PRIVATE" .env.*.example` must be empty.
+
+**`check_env` management command** (copy into target projects — stdlib only). Replace `project` below with your real project package. Assumes `<APP_LABEL>` is top-level (so `parents[3]` is the repo root); adapt if apps live under `apps/`. Compares literal `os.getenv` / `os.environ.get` keys in `project/settings.py` against both `.example` files. Fails on: code key missing from either `.example`, `.example` key with no reader (stale, ignoring still-commented optionals), denylist hit.
+
+```python
+# <APP_LABEL>/management/commands/check_env.py
+import re
+from pathlib import Path
+from django.core.management.base import BaseCommand, CommandError
+
+DENY = re.compile(r"sk_live_|AKIA|BEGIN PRIVATE|xoxb-")
+READER = re.compile(r'os\.(?:getenv|environ\.get)\(\s*["\']([A-Z_][A-Z0-9_]*)["\']')
+SUBSCRIPT = re.compile(r'os\.environ\[\s*["\']([A-Z_][A-Z0-9_]*)["\']\s*\]')
+
+class Command(BaseCommand):
+    help = "Fail if settings env readers drift from .env.*.example (no real values)."
+
+    def handle(self, *args, **opts):
+        base = Path(__file__).resolve().parents[3]
+        settings_src = (base / "project" / "settings.py").read_text()
+        code = set(READER.findall(settings_src)) | set(SUBSCRIPT.findall(settings_src)) - {"ENV"}
+        failures = []
+        for example in (".env.dev.example", ".env.prod.example"):
+            p = base / example
+            if not p.exists():
+                failures.append(f"missing {example}")
+                continue
+            keys = set()
+            for line in p.read_text().splitlines():
+                line = line.strip()
+                if not line or line.startswith("#"):
+                    continue
+                keys.add(line.split("=")[0].strip())
+            for k in sorted(code - keys):
+                failures.append(f"{example}: missing {k}")
+            for k in sorted(keys - code):
+                failures.append(f"{example}: stale {k}")
+            if DENY.search(p.read_text()):
+                failures.append(f"{example}: denylist hit (real secret?)")
+        if failures:
+            raise CommandError("\n".join(failures))
+        self.stdout.write("check_env OK")
+```
+
+Wire: run `python manage.py check_env` after `check` locally; CI `env-contract-guard` job runs it (required check, mirrors `test-contract-guard` — extend the same workflow file):
+
+```yaml
+# .github/workflows/test-contract.yml — add second job
+jobs:
+  env-contract-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.13" }
+      - run: python manage.py check_env
+``` Verify: add `os.getenv("NEW_KEY")` without `.example` → fails `missing`; remove reader, leave `.example` → fails `stale`; put `sk_live_123` in `.example` → fails `denylist`.
 
 ### 6. Core Settings & App Integration
 Refactor `project/settings.py` to initialize `python-dotenv`, load environment files, and register apps/middleware.
@@ -461,6 +523,9 @@ Verify the project configuration and ensure that the test environment is correct
 ```bash
 # Verify the complete configuration
 python manage.py check
+
+# Verify env readers match .env.*.example (see §5b)
+python manage.py check_env
 
 # Run tests to ensure test-specific database isolation (canonical — see [django-testing-contract](./django-testing-contract.md))
 python manage.py test --verbosity=2

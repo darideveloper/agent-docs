@@ -7,7 +7,7 @@ tags:
 type: resource
 status: active
 source: templates://astro/astro-base-config.md
-version: 2026-09-27+57b0fd3
+version: 2026-10-15+d5ebea3
 
 ---
 
@@ -96,9 +96,10 @@ With i18n, import `routes` with a **relative** path (config runs under Node, `@/
   "engines": { "node": ">=22" },
   "scripts": {
     "dev": "portless run pnpm astro dev",
-    "build": "pnpm validate-imports && astro build",
-    "build:i18n": "pnpm validate-i18n && pnpm validate-imports && astro build",
-    "build:full": "pnpm validate-i18n && pnpm validate-imports && astro build && pnpm validate-markdown",
+    "build": "pnpm validate-env && pnpm validate-imports && astro build",
+    "build:i18n": "pnpm validate-env && pnpm validate-i18n && pnpm validate-imports && astro build",
+    "build:full": "pnpm validate-env && pnpm validate-i18n && pnpm validate-imports && astro build && pnpm validate-markdown",
+    "validate-env": "tsx scripts/validate-env.ts",
     "validate-i18n": "tsx scripts/validate-i18n.ts",
     "validate-imports": "tsx scripts/validate-imports.ts",
     "validate-markdown": "tsx scripts/validate-markdown.ts",
@@ -111,7 +112,7 @@ With i18n, import `routes` with a **relative** path (config runs under Node, `@/
 Rules:
 
 - `dev` runs through `portless run`, which derives the app name automatically and prepends the branch inside worktrees (see `./astro-worktrees.md`). Behind a MITM corporate proxy, prefix with `NODE_OPTIONS=--use-openssl-ca`.
-- Validators are conditional: `validate-i18n` only if i18n layer present; `validate-markdown` only if Markdown layer present (it scans `dist/`, so it runs **after** `astro build`). `validate-imports` always runs (enforces `@/` alias; Astro config file is the one allowed relative-import exception).
+- Validators are conditional: `validate-env` always runs (env sync gate); `validate-i18n` only if i18n layer present; `validate-markdown` only if Markdown layer present (it scans `dist/`, so it runs **after** `astro build`). `validate-imports` always runs (enforces `@/` alias; Astro config file is the one allowed relative-import exception).
 - Requires `tsx` as a devDependency (`pnpm add -D tsx`) for any validator you use.
 - `pnpm` exclusively — never npm. Dockerfile uses `pnpm install --frozen-lockfile`.
 - Minimal instance note: projects without i18n/markdown layers may ship a bare `build: astro build` (no validators) plus project-specific scripts (e.g. `check:palette` for token setups). That is a layer-absent instance, not the canonical — keep the validator chain above as the template.
@@ -131,6 +132,10 @@ Rules:
 - Never hardcode origins in components — import `BUSINESS_DATA`.
 - `PUBLIC_*` is the only prefix exposed to client bundles. Non-`PUBLIC_` vars are server-only (`process.env`).
 - Pass every `PUBLIC_*` var as a Docker build arg (see `./astro-docker-deployment.md`) since Astro inlines them at build time.
+
+### Env lifecycle rule (atomic — no drift, no leaks)
+
+Any add / rename / delete of `import.meta.env.PUBLIC_*` or `process.env.*` MUST update in the same change: `.env.example` + `env.d.ts` (`PUBLIC_*` only) + `Dockerfile` `ARG`/`ENV` per new `PUBLIC_*`. Delete removes the key from all three. Rename = add + delete. Never copy a real value into `.env.example` or `env.d.ts`.
 
 ```ts
 // env.d.ts (project root) — default: no-backend projects (no PUBLIC_* readers yet)
@@ -243,6 +248,68 @@ SITE_URL=https://<project>.localhost
 # API_TOKEN=<paste-token-here>
 ```
 
+Placeholders only: URLs use `https://<...>.localhost`, secrets are empty or `<paste-token-here>` / `change-me`. `.env.example` must never contain a real credential. Denylist (fail): `sk_live_`, `AKIA`, `BEGIN PRIVATE`, `xoxb-` — allowlisted placeholders (`change-me`, `placeholder`, `<...>`, empty) never match it. Verify: `grep -R "sk_live_\|AKIA\|BEGIN PRIVATE" .env.example` must be empty.
+
+### Validate env sync (`scripts/validate-env.ts`)
+
+Copy into target projects (requires `tsx`, no new dep). Scans `src/**` + `astro.config.mjs` for `import.meta.env.PUBLIC_[A-Z0-9_]+` and `process.env.[A-Z_]+` (literals only — dynamic `getenv(name)` is banned), and compares against `.env.example` keys, `ImportMetaEnv` entries, and `Dockerfile` `ARG`s. Fails on: code key missing from `.env.example`, `.example` key with no reader (stale), denylist hit in `.env.example`.
+
+```ts
+// scripts/validate-env.ts — run: tsx scripts/validate-env.ts
+import { readFileSync, existsSync } from 'node:fs'
+import { execSync } from 'node:child_process'
+
+const INJECTED = new Set(['PORT', 'HOST', 'PORTLESS_URL'])
+const raw = execSync(
+  'grep -rhoE "(import\\.meta\\.env\\.PUBLIC_[A-Z0-9_]+|process\\.env\\.[A-Z_]+)" src astro.config.mjs 2>/dev/null || true',
+  { encoding: 'utf8' },
+)
+  .split('\n')
+  .map((l) => l.trim().replace(/^.*(PUBLIC_[A-Z0-9_]+|[A-Z_]+)$/, '$1'))
+  .filter(Boolean)
+const code = new Set(raw.filter((k) => !INJECTED.has(k)))
+if (!existsSync('.env.example')) {
+  console.error('missing .env.example')
+  process.exit(1)
+}
+const example = new Set(
+  readFileSync('.env.example', 'utf8')
+    .split('\n')
+    .map((l) => l.trim())
+    .filter((l) => l && !l.startsWith('#'))
+    .map((l) => l.split('=')[0].trim()),
+)
+const fail: string[] = [
+  ...[...code].filter((k) => !example.has(k)).map((k) => `missing from .env.example: ${k}`),
+  ...[...example].filter((k) => !code.has(k) && !INJECTED.has(k)).map((k) => `stale in .env.example: ${k}`),
+]
+if (existsSync('env.d.ts')) {
+  const dts = readFileSync('env.d.ts', 'utf8')
+  for (const k of [...code].filter((k) => k.startsWith('PUBLIC_')))
+    if (!dts.includes(k)) fail.push(`missing from env.d.ts: ${k}`)
+}
+if (existsSync('Dockerfile')) {
+  const docker = readFileSync('Dockerfile', 'utf8')
+  for (const k of [...code].filter((k) => k.startsWith('PUBLIC_')))
+    if (!docker.includes(`ARG ${k}`)) fail.push(`missing Dockerfile ARG: ${k}`)
+}
+const body = readFileSync('.env.example', 'utf8')
+if (/sk_live_|AKIA|BEGIN PRIVATE|xoxb-/.test(body)) fail.push('denylist hit in .env.example (real secret?)')
+if (fail.length) {
+  console.error(fail.join('\n'))
+  process.exit(1)
+}
+console.log('validate-env OK')
+```
+
+Wire into `package.json`:
+
+```json
+{ "scripts": { "validate-env": "tsx scripts/validate-env.ts", "build": "pnpm validate-env && pnpm validate-imports && astro build" } }
+```
+
+Verify: add a reader without `.example` → fails `missing`; remove reader, leave `.example` → fails `stale`; put `sk_live_123` in `.example` → fails `denylist`.
+
 ## 5. Routing precedence (Base + opt-ins)
 
 Astro resolves static files before the `[...path]` catch-all (i18n layer). Keep this map in mind:
@@ -281,6 +348,7 @@ Head order, LCP preload, and VT bugs come from deviating — see [Transitions](.
 ## 7. Verification matrix (all layers)
 
 - [ ] Base: `pnpm build` clean, 404 page, robots.txt + sitemap, no `[wikilink](./wikilink.md)` leftovers
+- [ ] Env: `pnpm validate-env` clean (no missing/stale/denylist hits)
 - [ ] Router ON: nav without reload, back/forward, hash anchors, embeds, analytics on `astro:page-load`
 - [ ] i18n (if present): `pnpm validate-i18n`, lang switch on unknown URLs stays put
 - [ ] Markdown (if present): `pnpm validate-markdown` post-build, no `<Markdown>` inside `<p>`
