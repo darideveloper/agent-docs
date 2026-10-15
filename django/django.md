@@ -8,7 +8,7 @@ tags:
 type: area-note
 status: active
 source: templates://django/django.md
-version: 2026-09-27+57b0fd3
+version: 2026-10-15+5e5a02d
 
 ---
 
@@ -36,6 +36,7 @@ Reusable template — English default (`en-us`, `America/Mexico_City`). Placehol
 *   [Cloudflare Tunnel Setup](./django-cloudflare-tunnel.md) — dev exposure, merged hosts
 *   [Spanish Django Admin](./django-i18n-es-admin.md) — OPT-IN Spanish variant, skip for English default
 *   [Image Copy Link Utility](./django-image-copy-link.md) — English `Copy link`, per-model `Media`
+*   [Admin Filters (Django + Unfold)](./django-admin-filters.md) — decision table, canonical `<APP_LABEL>/admin_filters.py`, submit-based ranges, permission-scoped hiding
 
 ### **Worked examples (do not copy as template)**
 *   [Stripe Subscriptions Architecture](./stripe-subscriptions.md)

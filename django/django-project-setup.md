@@ -7,13 +7,13 @@ tags:
 type: resource
 status: active
 source: templates://django/django-project-setup.md
-version: 2026-10-15+d5ebea3
+version: 2026-10-15+5e5a02d
 
 ---
 
 # Project Setup Guide (Reusable Template, English Default)
 
-> Reusable template for any Django project. Placeholders: `project` = project package, `{app_name}` = domain app. English by default (`LANGUAGE_CODE='en-us'`, `TIME_ZONE="America/Mexico_City"`). For Spanish admin, see [Spanish Django Admin](./django-i18n-es-admin.md) opt-in. Conventions: `project/admin_base.py` holds admin bases (plain flavor in [Unfold Admin Theme](./django-unfold-admin.md) §7.2; separate export flavor in excel guide §5), storage options in [Media Storage](./django-media-storage.md), tests canonical in [Testing Contract](./django-testing-contract.md), fixtures in [Fixtures](./django-fixtures.md).
+> Reusable template for any Django project. Placeholders: `project` = project package, `{app_name}` = domain app. English by default (`LANGUAGE_CODE='en-us'`, `TIME_ZONE="America/Mexico_City"`). For Spanish admin, see [Spanish Django Admin](./django-i18n-es-admin.md) opt-in. Conventions: `project/admin_base.py` holds admin bases (plain flavor in [Unfold Admin Theme](./django-unfold-admin.md) §7.2; separate export flavor in excel guide §5), changelist filtering in [Admin Filters](./django-admin-filters.md), storage options in [Media Storage](./django-media-storage.md), tests canonical in [Testing Contract](./django-testing-contract.md), fixtures in [Fixtures](./django-fixtures.md).
 
 Follow these steps to set up a new Django project from scratch.
 

@@ -13,6 +13,7 @@
     "layers": {
       "redis": { "files": ["django-redis.md"], "description": "Redis in Django — caching/Celery, full REDIS_URL" },
       "excel-export": { "files": ["django-excel-export.md"], "description": "Excel Export — openpyxl, separate export flavor ModelAdminUnfoldExportBase" },
+      "admin-filters": { "files": ["django-admin-filters.md"], "description": "Admin Filters (Django + Unfold) — decision table, canonical <APP_LABEL>/admin_filters.py, custom SimpleListFilter recipes, submit-based ranges, permission-scoped hiding; adopt when filtering needs more than bare field strings" },
       "bruno": { "files": ["django-bruno.md"], "description": "Bruno API Client — /api/ collections" },
       "local-subdomain": { "files": ["django-local-subdomain-setup.md"], "description": "Local Development & Subdomain Setup — portless + dev.sh" },
       "worktrees": { "files": ["django-worktrees.md"], "description": "Git Worktrees + Portless (Django) — one checkout per branch" },

@@ -10,7 +10,7 @@ tags:
 type: resource
 status: active
 source: templates://django/django-i18n-es-admin.md
-version: 2026-09-27+57b0fd3
+version: 2026-10-15+5e5a02d
 
 ---
 
@@ -474,7 +474,9 @@ only — do not include it in an English-default project):
 <script src="{% static 'js/range_date_filter_es.js' %}"></script>
 ```
 
-Extend the `texts` array with additional `[name]`→placeholder pairs as needed.
+Extend the `texts` array with additional `[name]`→placeholder pairs as needed. Any Unfold range filter
+added to a changelist ([Admin Filters](./django-admin-filters.md) §4) creates a new from/to input pair
+whose `[name]` values must be listed here, or it keeps Unfold's English placeholders.
 
 ---
 

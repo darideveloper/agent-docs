@@ -8,7 +8,7 @@ tags:
 type: resource
 status: active
 source: templates://django/django-unfold-admin.md
-version: 2026-09-27+57b0fd3
+version: 2026-10-15+5e5a02d
 
 ---
 
@@ -473,6 +473,8 @@ class TokenAdmin(BaseTokenAdmin):
 ## 7.2 Base Admin Class (`project/admin_base.py::ModelAdminUnfoldBase`)
 
 Plain-flavor canonical base. `[django-project-setup](./django-project-setup.md)` imports from here. NOTE: the excel-export guide defines its own export flavor (same class name + `export_selected` bulk actions) — intentional separate flavor, see excel §5. Provides common UI enhancements like row actions and compressed fields.
+
+Changelist filtering on top of this base — the filter classes, the canonical `<APP_LABEL>/admin_filters.py` module and the wiring (`list_filter_submit`, `get_list_filter`) — is documented in [Admin Filters](./django-admin-filters.md). `list_filter_sheet = False` below is the only filter-related default this base sets.
 
 ```python
 from unfold.admin import ModelAdmin
