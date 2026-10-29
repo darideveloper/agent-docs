@@ -8,7 +8,7 @@ tags:
 type: resource
 status: active
 source: templates://django/django-redis.md
-version: 2026-09-27+57b0fd3
+version: 2026-10-28+28a9c8d
 
 ---
 
@@ -23,8 +23,8 @@ This guide details how to implement Redis (external) in a Django project for cac
 Add these to your `requirements.txt` (see [Django Project Setup](./django-project-setup.md)):
 
 ```text
-django-redis>=5.4.0
-celery[redis]>=5.4.0
+django-redis==6.0.0
+celery[redis]==5.6.3
 ```
 
 ## ⚙️ Configuration (`settings.py`)

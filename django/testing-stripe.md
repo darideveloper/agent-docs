@@ -8,7 +8,7 @@ tags:
 type: guide
 status: active
 source: templates://django/testing-stripe.md
-version: 2026-09-27+57b0fd3
+version: 2026-10-28+28a9c8d
 
 ---
 
@@ -139,7 +139,7 @@ one artist) and refund it from the Dashboard afterwards.
 - The app deployed and publicly reachable at `https://<host>/webhooks/stripe/`
   (HTTPS required; Stripe will not POST to plain HTTP).
 - Production environment variables populated (names, not values, shown here):
-  `STRIPE_SECRET_KEY` (live `sk_live_...`), `STRIPE_PUBLISHABLE_KEY`
+  `STRIPE_SECRET_KEY` (live `sk_live_placeholder`), `STRIPE_PUBLISHABLE_KEY`
   (`pk_live_...`), `STRIPE_WEBHOOK_SECRET` (`whsec_...`), `STRIPE_API_VERSION`
   (pin a fixed version, matching the SDK's default), `STRIPE_PRICE_ID`
   (`price_...`), and `HOST=https://<host>`. Keep these in your gitignored

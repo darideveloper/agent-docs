@@ -9,7 +9,7 @@ tags:
 type: resource
 status: active
 source: templates://django/django-cloudflare-tunnel.md
-version: 2026-09-27+57b0fd3
+version: 2026-10-28+28a9c8d
 
 ---
 
@@ -124,16 +124,18 @@ def scheme(self):
     return self._get_scheme()
 ```
 
-**Env-driven configuration** (add to `settings.py`):
-```python
-import os
+**Already configured — nothing to enable.** The [Project Setup Guide](./django-project-setup.md) §6
+sets it unconditionally:
 
-# Only enable when behind a reverse proxy (Cloudflare Tunnel, nginx, etc.)
-# Set USE_SECURE_PROXY_SSL_HEADER=True in .env.dev when using the tunnel
-USE_SECURE_PROXY_SSL_HEADER = os.getenv("USE_SECURE_PROXY_SSL_HEADER") == "True"
-if USE_SECURE_PROXY_SSL_HEADER:
-    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+```python
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 ```
+
+Cloudflare Tunnel, portless, Traefik and Coolify all set `X-Forwarded-Proto`, so the same
+line serves development and production. There is deliberately **no**
+`USE_SECURE_PROXY_SSL_HEADER` toggle: an opt-in flag with a `False` default is how a
+deployment ends up with `SECURE_SSL_REDIRECT=True` and no proxy header — an infinite
+redirect loop — after someone forgets the variable.
 
 ### `USE_X_FORWARDED_HOST`
 
@@ -155,7 +157,7 @@ if USE_SECURE_PROXY_SSL_HEADER:
 **Env-driven configuration** (add to `settings.py`):
 ```python
 # Set USE_X_FORWARDED_HOST=True in .env.dev when using the tunnel
-USE_X_FORWARDED_HOST = os.getenv("USE_X_FORWARDED_HOST") == "True"
+USE_X_FORWARDED_HOST = os.getenv("USE_X_FORWARDED_HOST", "").strip().lower() == "true"
 ```
 
 ---
@@ -166,7 +168,6 @@ Add the following lines to your existing `.env.dev` (the file the project loads 
 
 ```env
 # Cloudflare Tunnel (dev only — leave False when working on localhost)
-USE_SECURE_PROXY_SSL_HEADER=True
 USE_X_FORWARDED_HOST=True
 
 # Toggle the tunnel itself in dev.sh (see Step 6)
@@ -313,7 +314,7 @@ tmux attach -t $SESSION_NAME
 |---|---|---|
 | `CSRF verification failed` (403) on POST | `CSRF_TRUSTED_ORIGINS` missing the tunnel domain | Add `https://your-project.trycloudflare.com` to `CSRF_TRUSTED_ORIGINS` in `.env.dev` |
 | `DisallowedHost at / ... Invalid HTTP_HOST` | `ALLOWED_HOSTS` missing the tunnel domain | Add the tunnel domain (or `.trycloudflare.com` wildcard) to `ALLOWED_HOSTS` |
-| Login loops / cookies not persisting | Django thinks the request is HTTP (not HTTPS) → `Secure` cookies rejected by the browser | Set `USE_SECURE_PROXY_SSL_HEADER=True` in `.env.dev` |
+| Login loops / cookies not persisting | Django thinks the request is HTTP (not HTTPS) → `Secure` cookies rejected by the browser | Confirm the proxy sends `X-Forwarded-Proto: https`; the header is already trusted in settings (§3). Never "fix" this by turning `SECURE_SSL_REDIRECT` off in production |
 | Password reset email contains `http://localhost:$PORT/...` | Django is using the internal `Host` header | Set `USE_X_FORWARDED_HOST=True` in `.env.dev` |
 | Admin redirects to `localhost` after login | Same as above | Same as above |
 | Static files return 404 in the tunneled URL | `ALLOWED_HOSTS` missing the tunnel domain (Django refuses to serve them) | Add the tunnel domain to `ALLOWED_HOSTS` |
@@ -327,7 +328,7 @@ tmux attach -t $SESSION_NAME
 2. Is `cloudflared` running? Check its terminal for the URL line.
 3. Is the tunnel domain in `ALLOWED_HOSTS`?
 4. Is the tunnel origin in `CSRF_TRUSTED_ORIGINS` and `CORS_ALLOWED_ORIGINS`?
-5. Is `USE_SECURE_PROXY_SSL_HEADER=True`?
+5. Is the proxy sending `X-Forwarded-Proto: https`? (settings already trust it — no env toggle)
 6. Is `USE_X_FORWARDED_HOST=True`?
 
 ---
@@ -341,7 +342,7 @@ The `ss -tuln` loop in `dev.sh` ensures that if you are working on multiple Djan
 Keep `USE_CLOUDFLARE_TUNNEL=False` on normal dev days. An active tunnel exposes your dev server to the internet, which is unnecessary for local-only work and increases the surface area for accidental leaks of debug data or test endpoints.
 
 ### Mode B (Cloudflare-only) Skips Portless
-If you don't need a stable local URL, you can skip `portless` entirely in Mode B. `cloudflared` will tunnel `http://localhost:8000` (or whatever port Django runs on) directly. You still need the Django settings changes (`SECURE_PROXY_SSL_HEADER`, `USE_X_FORWARDED_HOST`) because Cloudflare terminates TLS the same way regardless of whether portless sits in front of Django.
+If you don't need a stable local URL, you can skip `portless` entirely in Mode B. `cloudflared` will tunnel `http://localhost:8000` (or whatever port Django runs on) directly. The proxy header is already set in settings, so the only remaining change is `USE_X_FORWARDED_HOST` — Cloudflare terminates TLS the same way regardless of whether portless sits in front of Django.
 
 ### Tunnel URL Stability
 The temporary quick tunnel URL changes every restart of `cloudflared`. For a stable URL across restarts, you'd need a named tunnel with Cloudflare account login (out of scope here). For most dev workflows — demos, webhooks, mobile testing — a fresh URL on each session is fine; just update the domain in `.env.dev` (or use the wildcard pattern documented in Step 4).

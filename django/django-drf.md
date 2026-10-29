@@ -9,7 +9,7 @@ tags:
 type: resource
 status: active
 source: templates://django/django-drf.md
-version: 2026-09-27+57b0fd3
+version: 2026-10-28+28a9c8d
 
 ---
 
@@ -29,8 +29,8 @@ Add the following packages to `requirements.txt`:
 
 ```text
 # drf & filtering
-djangorestframework>=3.16.1
-django-filter>=24.3
+djangorestframework==3.18.3
+django-filter==26.2
 ```
 
 `django-filter` is optional, but it is included here because it is commonly enabled later (see [Section 12](#12-filtering-optional)).

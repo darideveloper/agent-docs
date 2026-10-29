@@ -8,7 +8,7 @@ tags:
 type: resource
 status: active
 source: templates://django/stripe-subscriptions.md
-version: 2026-09-27+57b0fd3
+version: 2026-10-28+28a9c8d
 
 ---
 
@@ -210,7 +210,7 @@ data rewrite of existing subscriptions.
 ### Prerequisites
 1. Install Stripe CLI and login: `stripe login` (full flow canonical in [Testing Stripe](./testing-stripe.md) — summary only here)
 2. Configure `.env.dev` with test-mode keys:
-   - `STRIPE_SECRET_KEY` (test `sk_test_...`)
+   - `STRIPE_SECRET_KEY` (test `sk_test_placeholder`)
    - `STRIPE_PUBLISHABLE_KEY` (test `pk_test_...`)
    - `STRIPE_PRICE_ID` (from Stripe Dashboard)
 3. Start webhook bridge:

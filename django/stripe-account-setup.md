@@ -8,7 +8,7 @@ tags:
 type: guide
 status: active
 source: templates://django/stripe-account-setup.md
-version: 2026-09-27+57b0fd3
+version: 2026-10-28+28a9c8d
 
 ---
 
@@ -74,7 +74,7 @@ your account's real values.
 
 1. **Run the local end-to-end flow** (./testing-stripe.md §3):
    - Start the dev server and, in another terminal:
-     `stripe listen --forward-to http://localhost:8000/webhooks/stripe/ --api-key <sk_test_...>`
+     `stripe listen --forward-to http://localhost:8000/webhooks/stripe/ --api-key <sk_test_placeholder>`
    - Create a `<MODEL>` (e.g. `Artist`) with a real email in the admin.
    - Click **Generate subscription link**, complete checkout with the test
      card, and verify webhook events + `<MODEL>.is_active` flips.
@@ -96,9 +96,9 @@ Same Stripe account, switch to live keys. Product/prices/portal must be
 **created again in live mode** — Stripe test and live are fully separate.
 
 1. **Live keys**
-   - Dashboard → **Developers → API keys**: copy `pk_live_...` and `sk_live_...`.
+   - Dashboard → **Developers → API keys**: copy `pk_live_...` and `sk_live_placeholder`.
    - Set in the production environment (`.env.prod` / deploy secrets):
-     `STRIPE_SECRET_KEY=sk_live_...`, `STRIPE_PUBLISHABLE_KEY=pk_live_...`.
+     `STRIPE_SECRET_KEY=sk_live_placeholder`, `STRIPE_PUBLISHABLE_KEY=pk_live_...`.
 
 2. **Create the live product + price**
    - In live mode, add the product `<product-name>` with a recurring

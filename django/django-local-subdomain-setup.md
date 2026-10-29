@@ -9,7 +9,7 @@ tags:
 type: resource
 status: active
 source: templates://django/django-local-subdomain-setup.md
-version: 2026-09-27+57b0fd3
+version: 2026-10-28+28a9c8d
 
 ---
 
@@ -40,8 +40,9 @@ To allow traffic from the portless subdomain, update `settings.py`. These settin
 import os
 from urllib.parse import urlparse
 
-# ALLOWED_HOSTS must include the portless domain
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")  # then strip each: [h.strip() for h in ...] to avoid DisallowedHost on " b"
+# ALLOWED_HOSTS must include the portless domain. Strip and drop empties: a
+# stray space (" b") raises DisallowedHost and an empty entry is a wildcard trap.
+ALLOWED_HOSTS = [h.strip() for h in os.getenv("ALLOWED_HOSTS", "").split(",") if h.strip()]
 
 # Worktree dev loop: portless injects PORTLESS_URL per checkout, so a copied
 # .env.dev resolves each sibling's own domain without edits.
@@ -51,13 +52,13 @@ HOST = (os.getenv("PORTLESS_URL", "") or os.getenv("HOST", "")).rstrip("/")
 cors_allowed = os.getenv("CORS_ALLOWED_ORIGINS")
 if cors_allowed and cors_allowed != "None":
     CORS_ALLOWED_ORIGINS = [
-        origin.strip().rstrip("/") for origin in cors_allowed.split(",")  # then strip each: [h.strip() for h in ...] to avoid DisallowedHost on " b" if origin.strip()
+        origin.strip().rstrip("/") for origin in cors_allowed.split(",") if origin.strip()
     ]
 
 csrf_trusted = os.getenv("CSRF_TRUSTED_ORIGINS")
 if csrf_trusted and csrf_trusted != "None":
     CSRF_TRUSTED_ORIGINS = [
-        origin.strip().rstrip("/") for origin in csrf_trusted.split(",")  # then strip each: [h.strip() for h in ...] to avoid DisallowedHost on " b" if origin.strip()
+        origin.strip().rstrip("/") for origin in csrf_trusted.split(",") if origin.strip()
     ]
 
 # Worktree dev loop: a copied .env.dev must work in any sibling, so in dev
@@ -73,6 +74,12 @@ if DEBUG and HOST:
     if "CSRF_TRUSTED_ORIGINS" in globals() and HOST not in CSRF_TRUSTED_ORIGINS:
         CSRF_TRUSTED_ORIGINS.append(HOST)
 ```
+
+> **Security switches in dev:** no action needed. `DEBUG=True` makes
+> `SECURE_SSL_REDIRECT`, `SESSION_COOKIE_SECURE` and `CSRF_COOKIE_SECURE` default to
+> `False` (see [Project Setup](./django-project-setup.md) §6), so `runserver` and the
+> portless proxy work as before. Do **not** set `SECURE_SSL_REDIRECT=True` in `.env.dev`:
+> the dev server does not terminate TLS and every request becomes a redirect loop.
 
 ---
 

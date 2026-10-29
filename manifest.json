@@ -3,6 +3,7 @@
     "base": [
       { "file": "django.md", "description": "Django hub — index of base + layers + worked examples (every project)" },
       { "file": "django-project-setup.md", "description": "Project Setup Guide — scaffolding; links out for storage/tests/fixtures/admin bases (every project)" },
+      { "file": "django-security-baseline.md", "description": "Security Baseline — pins, patch-day procedure, proxy vs Django ownership, new-project onboarding outside the repo" },
       { "file": "django-model-definitions.md", "description": "Model Definitions — English admin-visible texts" },
       { "file": "django-unfold-admin.md", "description": "Unfold Admin Theme — canonical project/admin_base.py, auto sidebar, base_site.html" },
       { "file": "django-drf.md", "description": "DRF Implementation Guide — default ON; /api/ router (use minimal non-DRF urls variant if no API)" },

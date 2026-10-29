@@ -9,7 +9,7 @@ tags:
 type: resource
 status: active
 source: templates://django/django-excel-export.md
-version: 2026-09-27+57b0fd3
+version: 2026-10-28+28a9c8d
 
 ---
 
@@ -38,7 +38,7 @@ The integration adds **three admin export modes** to a Django project using `dja
 | **Export to Excel (with related)** | Bulk action (same dropdown) | `POST …/changelist/ {action: export_selected_with_related}` | Selected rows + one sheet per forward FK target (referenced rows only) |
 | **Export all app data** | Header button (changelist + changeform) | `GET …/export_all/` (list) and `GET …/<id>/export_all/` (detail) | All rows of every model in one `app_label` (deterministic order) |
 
-**Stack:** Django 5.2, `django-unfold==0.77.1` (pinned), `openpyxl>=3.1,<3.2`, `django-solo` only if singletons.
+**Stack:** Django 5.2, `django-unfold==0.77.1` (pinned), `openpyxl==3.1.5`, `django-solo==2.5.1` only if singletons.
 
 **Outputs:** `.xlsx` with `Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` and RFC 5987 `filename*=utf-8''` disposition, header styling (generic blue, bold, frozen `A2`), banded rows, auto-sized columns (cap 50, scale 1.2), Decimal `#,##0.00`, Excel sheet-name sanitization.
 
@@ -84,7 +84,7 @@ changelist.html object-tools → tab_actions.html <ul> (actions_list)
 
 | Path | Role |
 |------|------|
-| `requirements.txt` | `openpyxl>=3.1,<3.2` |
+| `requirements.txt` | `openpyxl==3.1.5` |
 | `project/admin_base.py` | Export flavor: `ModelAdminUnfoldBase` (+ bulk exports), `<APP_MIXIN>`, `<APP_BASE>` + `_excel_response` |
 | `utils/excel_export.py` | All workbook logic |
 | `utils/test_excel_export.py` | Covers helpers + admin + permissions |
@@ -101,11 +101,11 @@ changelist.html object-tools → tab_actions.html <ul> (actions_list)
 Add to `requirements.txt`:
 
 ```
-openpyxl>=3.1,<3.2  # Excel xlsx with styling; pin minor to avoid breakage (Unfold is pinned)
-# already required: Django>=5.2,<5.3, django-unfold==0.77.1, django-solo>=2.3.0 if singletons
+openpyxl==3.1.5     # Excel xlsx with styling (pinned like every other dependency)
+# already required: Django==5.2.18, django-unfold==0.77.1, django-solo==2.5.1 if singletons
 ```
 
-Install (manual step): `pip install -r requirements.txt` or `pip install "openpyxl>=3.1,<3.2"`.
+Install (manual step): `pip install -r requirements.txt` or `pip install "openpyxl==3.1.5"`.
 
 ---
 
@@ -383,8 +383,8 @@ Already implemented: `except (OperationalError, ProgrammingError): return FALLBA
 
 1. **Dependencies**
    ```bash
-   pip install "openpyxl>=3.1,<3.2"
-   # pip install django-unfold django-solo  # if not already
+   pip install "openpyxl==3.1.5"
+   # pip install "django-unfold==0.77.1" "django-solo==2.5.1"  # if not already
    # Pin: django-unfold==0.77.1 (match stock tab_actions.html gap diff)
    ```
 
@@ -463,7 +463,7 @@ Already implemented: `except (OperationalError, ProgrammingError): return FALLBA
 - [ ] `<APP_LABEL>` replaced everywhere (app filter, `has_module_perms("<APP_LABEL>")`, filename `"<APP_LABEL>_full_export_"`, mixin/class names `<APP_MIXIN>`/`<APP_BASE>`)
 - [ ] `project` templates path replaced
 - [ ] `_primary_color()` kept as `FALLBACK_COLOR = "#2563EB"` generic blue or replaced with your brand hex
-- [ ] `requirements.txt` `openpyxl>=3.1,<3.2` installed (manual step)
+- [ ] `requirements.txt` `openpyxl==3.1.5` installed (manual step)
 - [ ] Singleton MRO verified if solo used (`SingletonModelAdmin` first)
 - [ ] Template overrides copied as needed: `admin/solo/change_form.html` (only if solo), `unfold/helpers/tab_actions.html` with `gap-2` / `lg:gap-2`
 - [ ] `TEMPLATES[0].DIRS` precedence confirmed (`python manage.py check` + `get_template("admin/solo/change_form.html").origin.name` → your project)

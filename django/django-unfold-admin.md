@@ -8,7 +8,7 @@ tags:
 type: resource
 status: active
 source: templates://django/django-unfold-admin.md
-version: 2026-10-15+5e5a02d
+version: 2026-10-28+28a9c8d
 
 ---
 
@@ -522,4 +522,3 @@ To ensure the "bottom bar" (sticky action buttons) and responsive containers wor
 - **Inheritance**: Do not extend `unfold/layouts/base.html` in your `base_site.html` overrides; always extend `admin/base.html`.
 - **Custom CSS**: Avoid applying `position: absolute` or `position: fixed` to the main page containers (`#page`, `#main`, etc.), as this interferes with Unfold's native sticky positioning logic.
 - **Admin Base**: Use `ModelAdminUnfoldBase` for all application models to ensure consistent button availability and unsaved form warnings.
-```

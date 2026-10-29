@@ -10,7 +10,7 @@ tags:
 type: resource
 status: active
 source: templates://django/django-worktrees.md
-version: 2026-09-27+57b0fd3
+version: 2026-10-28+28a9c8d
 
 ---
 
@@ -86,7 +86,7 @@ git worktree prune
 
 `worktree-new.sh` performs the full bootstrap per sibling: fresh `venv`,
 `pip install -r requirements.txt`, `.env`/`.env.dev` copy (from main, else
-`.env.example`), `migrate`, and `.opencode` openspec skills/commands sync.
+`.env.dev.example`), `migrate`, and `.opencode` openspec skills/commands sync.
 
 ## Finish (merge + delete)
 
@@ -130,7 +130,7 @@ remains a meaningful guard. Squash compresses the branch to one commit on
 | Path | Why | Action per sibling |
 |---|---|---|
 | `venv/` / `.venv/` | gitignored | fresh `python3 -m venv venv` + `pip install` (never symlink) |
-| `.env`, `.env.dev` | gitignored (secrets) | copied by `worktree-new.sh` (`$MAIN/.env.dev` → `.env.example` fallback) |
+| `.env`, `.env.dev` | gitignored (secrets) | copied by `worktree-new.sh` (`$MAIN/.env.dev` → `.env.dev.example` fallback) |
 | `db.sqlite3`, `testing.sqlite3` | gitignored | recreated; tests always use sqlite |
 | `media/`, `staticfiles/` | gitignored | recreated |
 | Dotfolders (`.opencode/`, …) | gitignored via `.*/` | openspec skills/commands synced by script |
@@ -255,7 +255,7 @@ venv/bin/pip install -r requirements.txt
 # 3. Env: copy from main checkout, else template (copied HOST is harmless:
 # settings resolve PORTLESS_URL first, then HOST)
 [ -f ".env" ] || { [ -f "$MAIN/.env" ] && cp "$MAIN/.env" .env || echo "ENV=dev" > .env; }
-[ -f ".env.dev" ] || { [ -f "$MAIN/.env.dev" ] && cp "$MAIN/.env.dev" .env.dev || cp .env.example .env.dev; }
+[ -f ".env.dev" ] || { [ -f "$MAIN/.env.dev" ] && cp "$MAIN/.env.dev" .env.dev || cp .env.dev.example .env.dev; }
 
 # 4. Migrate (shared Postgres per project decision; tests always use sqlite)
 venv/bin/python manage.py migrate --noinput

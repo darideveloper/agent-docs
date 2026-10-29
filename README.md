@@ -4,7 +4,7 @@
 
 ## Stacks
 
-- **django/** — 21 files incl. hub (project setup, model definitions, unfold, DRF default-ON, media canonical STORAGES, testing runner, fixtures, optional layers, stripe worked examples)
+- **django/** — 22 files incl. hub (project setup, security baseline, model definitions, unfold, DRF default-ON, media canonical STORAGES, testing runner, fixtures, optional layers, stripe worked examples)
 - **astro/** — 27 files incl. hub: 20 top-level + `gsap-scrolltrigger/` 7 files (base config, atomic components, site-config, transitions, SEO, docker, portless, worktrees, dependency map + opt-in layers: react-islands, zustand-zod, fetch-wrapper, i18n, markdown, images, pwa, gsap-scrolltrigger)
 
 See `manifest.json` for the machine-readable stack → base + layers map. Descriptions mirror the hub docs (hub is vendored as base).

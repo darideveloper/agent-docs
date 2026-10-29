@@ -7,7 +7,7 @@ tags:
 type: guide
 status: active
 source: templates://django/django-testing-contract.md
-version: 2026-09-27+57b0fd3
+version: 2026-10-28+28a9c8d
 
 ---
 
@@ -138,6 +138,33 @@ else:
 
 > No `conftest.py` fixture needed. Admin changelist/change/add views render 200 during `manage.py test` because `StaticFilesStorage` doesn't need `staticfiles.json`. Production stays on `CompressedManifestStaticFilesStorage`. No runtime change to existing `TestCase`/`APITestCase` suites. See also [django-media-storage](./django-media-storage.md) for S3 details.
 
+**Both variants — security flags (append at the very END of `settings.py`):**
+
+The project setup guide enables `SECURE_SSL_REDIRECT` and Secure cookies in
+production. The test client speaks plain HTTP, so without this override every
+request comes back as a `301` and every suite goes red. It must be the **last
+block** of the file: the security block assigns those settings earlier, so an
+override above it is silently lost.
+
+```python
+# Test runs use the Django test client over plain HTTP: the production HTTPS
+# redirect would turn every request into a 301 and Secure cookies cannot be set.
+# Must live at the END of the file — SECURE_SSL_REDIRECT is assigned earlier and
+# would otherwise win.
+if IS_TESTING:
+    SECURE_SSL_REDIRECT = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+    for _test_host in ("localhost", "127.0.0.1", "testserver"):
+        if _test_host not in ALLOWED_HOSTS:
+            ALLOWED_HOSTS.append(_test_host)
+```
+
+> **Selenium:** E2E tests must skip themselves when no browser is available
+> (`shutil.which("chromium") or shutil.which("google-chrome")` → `skipUnless`).
+> Production containers have no browser; without the guard, the suite is red for
+> an environment reason and the real failures get ignored.
+
 ### 2.3 `.gitignore` — minimal (Ponytail)
 
 ```gitignore
@@ -163,7 +190,7 @@ venv
 
 ```text
 # testing
-selenium>=4.40.0   # only testing extra — no pytest/pytest-django
+selenium==4.51.0   # only testing extra — no pytest/pytest-django
 ```
 
 Ensure `grep -i pytest requirements.txt` is empty (also check `requirements-dev.txt` if it exists). Never add `pytest`/`pytest-django` even to `requirements-dev.txt` — it signals endorsement.
@@ -219,9 +246,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: chmod +x .opencode/commands/guard.sh && ./.opencode/commands/guard.sh
+  deps-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google/osv-scanner-action/osv-scanner-action@v2.7.0
+        with:
+          scan-args: |-
+            scan
+            source
+            -L requirements.txt
 ```
 
-> Tests run **only** locally and in prod — not in GitHub. CI runs the contract guard only.
+> `deps-audit` checks the **declared pins** against OSV, so a CVE in a pinned
+> package fails the PR. It cannot see Debian packages inside the image — the OS
+> half of the baseline stays manual (see [Security Baseline](./django-security-baseline.md)).
+
+> Tests run **only** locally and in prod — not in GitHub. CI runs the contract guard and the dependency audit; it does not execute the suite.
 
 Set branch protection: `test-contract-guard` = **required** (PR cannot merge when red). Commit with `git add -f .opencode/commands/guard.sh .github/workflows/test-contract.yml` (otherwise `.*/` ignores them). No `Makefile`/`make test` or pre-commit wrapper — canonical remains `venv/bin/python manage.py test` only (local/prod).
 
@@ -247,6 +288,8 @@ Set branch protection: `test-contract-guard` = **required** (PR cannot merge whe
 
 ```bash
 venv/bin/python manage.py test --verbosity=2  # expect Ran N tests OK — admin changelist/change/add views 200 via StaticFilesStorage
+
+venv/bin/python manage.py check --deploy     # inside the container/prod env — expect W004 only (HSTS lives in the proxy)
 
 ./.opencode/commands/guard.sh                 # expect test-contract-guard OK
 
@@ -312,8 +355,10 @@ False positives avoided: import check is anchored `^\s*(import pytest|from pytes
 
 - [ ] Copy `AGENTS.md` Testing section (§2.1)
 - [ ] Copy `<PROJECT>/settings.py` `IS_TESTING` + `STORAGES` fallback (§2.2) — both `Path`/`os.path` variants, including `private` only if used
+- [ ] Append the `IS_TESTING` security override at the **end** of `settings.py` (§2.2) — with `SECURE_SSL_REDIRECT` on, tests otherwise return `301`
+- [ ] Guard Selenium E2E tests with a browser-presence skip (§2.2) — containers have no browser
 - [ ] Add `/.venv/` to `.gitignore` (keep `.*/` + `openspec/changes/*` pair — see [django-project-setup](./django-project-setup.md) §4; verify via `git check-ignore -v .pytest_cache` and `git check-ignore -v .opencode/test`)
-- [ ] Ensure `requirements.txt` has no pytest (only `selenium>=4.40.0` if needed) — `grep -i pytest` empty
+- [ ] Ensure `requirements.txt` has no pytest (only `selenium==4.51.0` if needed) — `grep -i pytest` empty
 - [ ] Add `guard.sh` + workflow **in Django project** (force-add with `git add -f`), set `test-contract-guard` required in branch protection
 - [ ] Update project docs (`django-project-setup.md` §9 etc.) — no `pytest` run instructions in `docs/**/*.md`
 - [ ] **If using OpenSpec:** create `testing-contract` spec + update `admin-list-performance` Purpose+Requirement, `openspec validate --strict` valid

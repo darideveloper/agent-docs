@@ -9,7 +9,7 @@ tags:
 type: resource
 status: active
 source: templates://django/django-media-storage.md
-version: 2026-09-27+57b0fd3
+version: 2026-10-28+28a9c8d
 
 ---
 
@@ -32,8 +32,8 @@ The integration relies on two primary libraries:
 Add the following to your `requirements.txt`:
 
 ```text
-django-storages>=1.14.4
-boto3>=1.34
+django-storages==1.14.6
+boto3==1.35.36
 ```
 
 ---
@@ -87,7 +87,7 @@ The storage logic is toggled via an environment variable `STORAGE_AWS`.
 
 ```python
 # Storage settings
-STORAGE_AWS = os.getenv("STORAGE_AWS") == "True"
+STORAGE_AWS = os.getenv("STORAGE_AWS", "").strip().lower() == "true"
 
 if STORAGE_AWS:
     # 1. Credentials
@@ -107,13 +107,16 @@ if STORAGE_AWS:
     AWS_S3_CUSTOM_DOMAIN = os.getenv("AWS_S3_CUSTOM_DOMAIN")
 
     # 4. Folder isolation
-    # Allows multiple projects to share one bucket
-    AWS_PROJECT_FOLDER = os.getenv("AWS_PROJECT_FOLDER")
+    # Allows multiple projects to share one bucket. Guard the empty case: without
+    # it the keys become "None/static/..." — and note that this variable must be
+    # declared as a build ARG, or collectstatic never sees it (see the Docker note).
+    _folder = os.getenv("AWS_PROJECT_FOLDER", "")
+    AWS_PROJECT_FOLDER = _folder
 
     # 5. File Locations
-    STATIC_LOCATION = f"{AWS_PROJECT_FOLDER}/static"
-    PUBLIC_MEDIA_LOCATION = f"{AWS_PROJECT_FOLDER}/media"
-    PRIVATE_MEDIA_LOCATION = f"{AWS_PROJECT_FOLDER}/private"
+    STATIC_LOCATION = f"{_folder}/static" if _folder else "static"
+    PUBLIC_MEDIA_LOCATION = f"{_folder}/media" if _folder else "media"
+    PRIVATE_MEDIA_LOCATION = f"{_folder}/private" if _folder else "private"
 
     # 6. Django-Storages Engine Mapping (Django 4.2+)
     STORAGES = {
@@ -177,7 +180,8 @@ Since `collectstatic` is typically executed during the Docker build process to p
 In your `Dockerfile`, ensure the following build arguments are defined before the `RUN python manage.py collectstatic` command:
 
 ```dockerfile
-# Required for collectstatic to upload to S3 during build
+# Declare them as ARGs — Coolify passes every env var, but Docker only exposes
+# the ones the Dockerfile names.
 ARG AWS_ACCESS_KEY_ID
 ARG AWS_SECRET_ACCESS_KEY
 ARG AWS_STORAGE_BUCKET_NAME
@@ -185,17 +189,37 @@ ARG AWS_S3_REGION_NAME
 ARG AWS_S3_ENDPOINT_URL
 ARG AWS_S3_CUSTOM_DOMAIN
 ARG AWS_PROJECT_FOLDER
-ARG STORAGE_AWS
+ARG STORAGE_AWS=False
 
-ENV AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+# Values are scoped to this layer: nothing stays baked into the image.
+RUN SECRET_KEY=change-me-build-only-000000000000000000000000000000 \
+    DEBUG=False \
+    STORAGE_AWS=${STORAGE_AWS} \
+    AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
     AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
     AWS_STORAGE_BUCKET_NAME=${AWS_STORAGE_BUCKET_NAME} \
     AWS_S3_REGION_NAME=${AWS_S3_REGION_NAME} \
     AWS_S3_ENDPOINT_URL=${AWS_S3_ENDPOINT_URL} \
     AWS_S3_CUSTOM_DOMAIN=${AWS_S3_CUSTOM_DOMAIN} \
     AWS_PROJECT_FOLDER=${AWS_PROJECT_FOLDER} \
-    STORAGE_AWS=${STORAGE_AWS}
+    python manage.py collectstatic --noinput
 ```
+
+> **Canonical Dockerfile:** [Project Setup](./django-project-setup.md) §14 owns the full
+> build; the snippet above is only the storage slice of it.
+
+> [!warning] `STORAGE_AWS` must reach the **build**, not just the runtime
+> Coolify passes every environment variable as `--build-arg`, but Docker only exposes the
+> ones the Dockerfile declares. If `STORAGE_AWS` is absent at build time (or is not `True`;
+> the reader is case-insensitive, but the value still has to be there), `collectstatic`
+> compiles locally and the bucket keeps serving the old CSS/JS forever.
+> The fingerprint is in the build log:
+> - `253 static files copied to '/app/staticfiles'` → **local, wrong**
+> - `253 static files copied.` (no path) → **S3, correct**
+>
+> If recreating the variable in the Coolify UI does not fix it, delete it and create it
+> again from scratch with the bare value `True`; editing in place did not take in
+> `cakestoremommy` (2026-10-23).
 
 ---
 
@@ -203,7 +227,7 @@ ENV AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
 
 To replicate this setup in a new Django project (see [django-project-setup](./django-project-setup.md)):
 
-1.  **Install dependencies**: `pip install django-storages boto3`.
+1.  **Install dependencies**: `pip install "django-storages==1.14.6" "boto3==1.35.36"` (already pinned in `requirements.txt`).
 2.  **Create `storage_backends.py`**: Copy the class definitions provided above into your project's main module.
 3.  **Update `settings.py`**:
     - Add `storages` to `INSTALLED_APPS`.

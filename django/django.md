@@ -8,7 +8,7 @@ tags:
 type: area-note
 status: active
 source: templates://django/django.md
-version: 2026-10-15+5e5a02d
+version: 2026-10-28+28a9c8d
 
 ---
 
@@ -20,6 +20,7 @@ Reusable template — English default (`en-us`, `America/Mexico_City`). Placehol
 
 ### **Core (copy for every project)**
 *   [Project Setup Guide](./django-project-setup.md) — scaffolding; links out for storage/tests/fixtures/admin bases
+*   [Security Baseline](./django-security-baseline.md) — pins, patch-day procedure, proxy vs Django ownership, onboarding outside the repo
 *   [Model Definitions](./django-model-definitions.md) — English admin-visible texts
 *   [Unfold Admin Theme](./django-unfold-admin.md) — canonical `project/admin_base.py`, auto sidebar, `base_site.html`
 *   [DRF Implementation Guide](./django-drf.md) — default ON; `/api/` router (use minimal non-DRF urls variant if no API)
