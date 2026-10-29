@@ -121,8 +121,10 @@ sanitize_gate() {
   local f="$1"
   if grep -E "sk_live" "$f" 2>/dev/null | grep -v -E "sk_live_placeholder|<[^>]+>|example|placeholder" | grep -q .; then echo "BLOCKED: $f contains sk_live" >&2; return 1; fi
   if grep -q "BEGIN .*PRIVATE KEY" "$f" 2>/dev/null; then echo "BLOCKED: $f contains a private key" >&2; return 1; fi
-  # sk_test / SECRET_KEY= / PASSWORD only blocked when NOT a placeholder line
-  if grep -E "sk_test|SECRET_KEY=|PASSWORD" "$f" 2>/dev/null | grep -v -E "sk_test_placeholder|SECRET_KEY=change-me|<[^>]+>|example|placeholder|paste-token-here" | grep -q .; then
+  # sk_test / SECRET_KEY= / PASSWORD only blocked when NOT a placeholder line.
+  # An empty assignment (DB_PASSWORD=) is a placeholder, and code that reads a
+  # variable (os.getenv/os.environ/config) is not a literal secret.
+  if grep -E "sk_test|SECRET_KEY=|PASSWORD" "$f" 2>/dev/null | grep -v -E "sk_test_placeholder|SECRET_KEY=change-me|<[^>]+>|example|placeholder|paste-token-here" | grep -vE "(PASSWORD|SECRET_KEY)=[[:space:]]*$|os\.(getenv|environ)|config\(" | grep -q .; then
     echo "BLOCKED: $f contains a possible real secret (sk_test/SECRET_KEY/PASSWORD). Use placeholders." >&2
     return 1
   fi
